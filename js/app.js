@@ -5,7 +5,7 @@ import {
   loadLeague, saveLeague, resetLeague, hasAdmin, setAdminPassword, loginAdmin,
   isAdmin, logoutAdmin, standings, teamById, latestPower, uid, saveVideoFile,
   loadVideoFile, youtubeId,
-} from "./store.js?v=14";
+} from "./store.js?v=15";
 
 const app = document.getElementById("app");
 const ui = {
@@ -430,16 +430,16 @@ function matchRow(g) {
   const away = teamById(data, g.awayId);
   return `<div class="match">
     <div class="side">${crest(home)} ${esc(home?.name)}</div>
-    <div class="score">${g.played ? `${g.home}–${g.away}` : "vs"}</div>
+    <div class="score">vs</div>
     <div class="side away">${esc(away?.name)} ${crest(away)}</div>
   </div>
-  <div class="faint">${g.label ? `${esc(g.label)} · ` : ""}${esc(formatMatchDate(g.date))}${g.played ? "" : ` · prediction ${g.predHome ?? "-"}–${g.predAway ?? "-"}`}</div>`;
+  <div class="faint">${g.label ? `${esc(g.label)} · ` : ""}${esc(formatMatchDate(g.date))}</div>`;
 }
 
 function viewSchedule() {
   const weeks = [...new Set(data.games.map((g) => g.week))].sort((a, b) => a - b);
   return `<div class="kicker">2026 season</div><h1>Schedule</h1>
-    <p class="muted">Every team plays each Sunday and Wednesday. 12 games a side. Enter scores in Admin.</p>
+    <p class="muted">Every team plays each Sunday and Wednesday. 12 games a side. Season starts September 20.</p>
     ${weeks.map((w) => {
       const games = data.games.filter((g) => g.week === w);
       const days = [...new Set(games.map((g) => g.date))];
@@ -478,13 +478,13 @@ function viewRankings() {
       }).join("")}
     </div>
     <div class="card" style="margin-top:14px">
-      <h3>Upcoming predictions</h3>
+      <h3>Upcoming matches</h3>
       ${upcoming.map((g) => {
         const home = teamById(data, g.homeId);
         const away = teamById(data, g.awayId);
         return `<div class="match">
           <div class="side">${crest(home)}${esc(home?.name)}</div>
-          <div class="score pred">${g.predHome}–${g.predAway}</div>
+          <div class="score">vs</div>
           <div class="side away">${esc(away?.name)}${crest(away)}</div>
         </div>`;
       }).join("") || `<p class="muted">No upcoming games to pick.</p>`}

@@ -3,9 +3,9 @@
  * Viewers see whatever is stored here. Export the JSON if you want a backup.
  */
 
-import { SEED } from "./seed.js?v=14";
+import { SEED } from "./seed.js?v=15";
 
-const DATA_KEY = "ssl_league_fret_v3";
+const DATA_KEY = "ssl_league_fret_v4";
 const ADMIN_KEY = "ssl_admin_v1";
 const SESSION_KEY = "ssl_admin_session";
 
@@ -51,7 +51,7 @@ export function loadLeague() {
     players: [...seed.players, ...extraPlayers],
     games: mergeGames(seed.games, saved.games),
     powerRankings: seed.powerRankings,
-    news: seed.news || saved.news || [],
+    news: seed.news || [],
     videos: saved.videos || seed.videos,
   };
   localStorage.setItem(DATA_KEY, JSON.stringify(data));

@@ -122,7 +122,7 @@ export const SEED = {
   ],
   games: [
     // Week 1 — Sun Sep 20 & Wed Sep 23
-    { id: "g01", week: 1, date: "2026-09-20", homeId: "dukes", awayId: "rico", home: 0, away: 2, played: true, predHome: 2, predAway: 1, label: "Week 1 Showcase Championship" },
+    { id: "g01", week: 1, date: "2026-09-20", homeId: "dukes", awayId: "rico", home: null, away: null, played: false, predHome: 2, predAway: 1, label: "Week 1 Showcase Championship" },
     { id: "g02", week: 1, date: "2026-09-20", homeId: "bnb", awayId: "showtime", home: null, away: null, played: false, predHome: 1, predAway: 2 },
     { id: "g03", week: 1, date: "2026-09-23", homeId: "dukes", awayId: "bnb", home: null, away: null, played: false, predHome: 2, predAway: 1 },
     { id: "g04", week: 1, date: "2026-09-23", homeId: "rico", awayId: "showtime", home: null, away: null, played: false, predHome: 1, predAway: 2 },
@@ -168,10 +168,10 @@ export const SEED = {
   news: [
     {
       id: "n1",
-      date: "2026-09-20",
-      kicker: "Week 1 Showcase Championship",
-      title: "Rico Footy beat Dukes FC",
-      body: "Rico Footy took the Week 1 Showcase Championship over Dukes FC. Uncle Ricardo’s side won 2–0 and grabbed the first headline of the Fret Footy season.",
+      date: "2026-09-18",
+      kicker: "Season preview",
+      title: "The wait is almost over",
+      body: "Fret Footy is locked in for 2026 and the countdown is on. Four clubs, full rosters, Sundays and Wednesdays from September 20 through October 28. Dukes FC, Rico Footy, Team BNB, and Team Showtime are ready. Kickoff cannot come soon enough.",
     },
   ],
 };
