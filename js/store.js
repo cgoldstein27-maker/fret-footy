@@ -3,7 +3,7 @@
  * Viewers see whatever is stored here. Export the JSON if you want a backup.
  */
 
-import { SEED } from "./seed.js?v=12";
+import { SEED } from "./seed.js?v=13";
 
 const DATA_KEY = "ssl_league_fret_v3";
 const ADMIN_KEY = "ssl_admin_v1";

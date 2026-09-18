@@ -5,7 +5,7 @@ import {
   loadLeague, saveLeague, resetLeague, hasAdmin, setAdminPassword, loginAdmin,
   isAdmin, logoutAdmin, standings, teamById, latestPower, uid, saveVideoFile,
   loadVideoFile, youtubeId,
-} from "./store.js?v=12";
+} from "./store.js?v=13";
 
 const app = document.getElementById("app");
 const ui = {
@@ -67,7 +67,7 @@ function header() {
   return `
     <header class="site-header">
       <button class="brand" data-act="nav" data-view="home">
-        <span class="brand-mark">SL</span>
+        <span class="brand-mark"><img alt="Fret Footy" src="img/fret-footy-logo.jpg" /></span>
         <span>
           <small>${esc(data.season)} season</small>
           <strong>${esc(data.leagueName)}</strong>
