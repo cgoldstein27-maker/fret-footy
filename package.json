@@ -1,0 +1,7 @@
+{
+  "name": "school-soccer-league",
+  "private": true,
+  "scripts": {
+    "start": "python3 -m http.server 8788"
+  }
+}
