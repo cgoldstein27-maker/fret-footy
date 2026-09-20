@@ -5,7 +5,7 @@ import {
   loadLeague, saveLeague, resetLeague, hasAdmin, setAdminPassword, loginAdmin,
   isAdmin, logoutAdmin, standings, teamById, latestPower, uid, saveVideoFile,
   loadVideoFile, youtubeId,
-} from "./store.js?v=16";
+} from "./store.js?v=17";
 
 const app = document.getElementById("app");
 const ui = {
@@ -445,7 +445,7 @@ function matchRow(g) {
 function viewSchedule() {
   const weeks = [...new Set(data.games.map((g) => g.week))].sort((a, b) => a - b);
   return `<div class="kicker">2026 season</div><h1>Schedule</h1>
-    <p class="muted">Every team plays each Sunday and Wednesday. 12 games a side. Season starts September 20.</p>
+    <p class="muted">Every team plays each Sunday and Wednesday. 12 games a side. Season starts September 21.</p>
     ${weeks.map((w) => {
       const games = data.games.filter((g) => g.week === w);
       const days = [...new Set(games.map((g) => g.date))];

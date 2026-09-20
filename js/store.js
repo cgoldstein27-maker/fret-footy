@@ -3,9 +3,9 @@
  * Viewers see whatever is stored here. Export the JSON if you want a backup.
  */
 
-import { SEED } from "./seed.js?v=16";
+import { SEED } from "./seed.js?v=17";
 
-const DATA_KEY = "ssl_league_fret_v5";
+const DATA_KEY = "ssl_league_fret_v6";
 const ADMIN_KEY = "ssl_admin_v1";
 const SESSION_KEY = "ssl_admin_session";
 
