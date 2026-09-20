@@ -5,7 +5,7 @@ import {
   loadLeague, saveLeague, resetLeague, hasAdmin, setAdminPassword, loginAdmin,
   isAdmin, logoutAdmin, standings, teamById, latestPower, uid, saveVideoFile,
   loadVideoFile, youtubeId,
-} from "./store.js?v=15";
+} from "./store.js?v=16";
 
 const app = document.getElementById("app");
 const ui = {
@@ -349,11 +349,15 @@ function viewStandings() {
     <div class="card" style="margin-top:16px">${standingsTable(standings(data))}</div>`;
 }
 
+function ovrLabel(p) {
+  return p.ovr == null ? "?" : p.ovr;
+}
+
 function viewPlayers() {
   const team = ui.teamId ? teamById(data, ui.teamId) : null;
   let list = [...data.players];
   if (team) list = list.filter((p) => p.teamId === team.id);
-  list.sort((a, b) => b.ovr - a.ovr);
+  list.sort((a, b) => (b.ovr ?? -1) - (a.ovr ?? -1));
   const leaders = [...data.players].sort((a, b) => (b.goals || 0) - (a.goals || 0) || (b.assists || 0) - (a.assists || 0)).slice(0, 5);
   return `
     <div class="kicker">${team ? esc(team.name) : "League"}</div>
@@ -368,11 +372,12 @@ function viewPlayers() {
         ${list.map((p) => {
           const t = teamById(data, p.teamId);
           return `<div class="player-card" data-act="player" data-id="${p.id}">
-            <span class="ovr">${p.ovr}</span>
+            <span class="ovr">${ovrLabel(p)}</span>
             <span class="pos">${esc(p.pos)}</span>
             <div>
               <strong>${esc(p.name)}</strong>${p.aka ? ` <span class="faint">“${esc(p.aka)}”</span>` : ""}
-              <div class="faint">${esc(t?.name)} · ${p.goals || 0} G · ${p.assists || 0} A${p.note ? ` · ${esc(p.note)}` : ""}</div>
+              ${p.ineligible ? `<div class="ineligible">Currently ineligible</div>` : ""}
+              <div class="faint">${esc(t?.name)} · ${p.goals || 0} G · ${p.assists || 0} A${p.note && !p.ineligible ? ` · ${esc(p.note)}` : ""}</div>
             </div>
           </div>`;
         }).join("")}
@@ -405,7 +410,8 @@ function playerModal() {
   ].filter(([, v]) => v != null);
   return `<div class="modal-bg" data-act="close-modal"><div class="modal" data-stop="1">
     <div class="kicker">${esc(t?.name)} · ${esc(p.pos)}${t?.coach ? ` · ${esc(t.coachTitle || "Coach")} ${esc(t.coach)}` : ""}</div>
-    <h2>${esc(p.name)} ${p.aka ? `<span class="faint">“${esc(p.aka)}”</span>` : ""} <span class="ovr">${p.ovr}</span></h2>
+    <h2>${esc(p.name)} ${p.aka ? `<span class="faint">“${esc(p.aka)}”</span>` : ""} <span class="ovr">${ovrLabel(p)}</span></h2>
+    ${p.ineligible ? `<p class="ineligible">Currently ineligible</p>` : ""}
     <p class="muted">${p.gp || 0} GP · ${p.goals || 0} goals · ${p.assists || 0} assists${p.saves ? ` · ${p.saves} saves` : ""}</p>
     ${p.note ? `<p class="muted">${esc(p.note)}</p>` : ""}
     <div class="attrs" style="margin-top:14px">

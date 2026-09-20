@@ -20,7 +20,7 @@ export const SEED = {
   teams: [
     { id: "dukes", name: "Dukes FC", short: "DUK", color: "#0d4d2b", color2: "#ffffff", logo: "img/dukes-fc.jpg" },
     { id: "rico", name: "Rico Footy", short: "RICO", color: "#ea580c", color2: "#111111", logo: "img/rico-footy.jpg", coach: "Uncle Ricardo", coachTitle: "GM / Coach" },
-    { id: "bnb", name: "Team BNB", short: "BNB", color: "#0b1220", color2: "#d4a017", logo: "img/bnb.png" },
+    { id: "bnb", name: "Team Sins", short: "SIN", color: "#0b1220", color2: "#d4a017", logo: "img/bnb.png" },
     { id: "showtime", name: "Team Showtime", short: "SHOW", color: "#7a1020", color2: "#f4c430", logo: "img/showtime.png" },
   ],
   players: [
@@ -93,6 +93,7 @@ export const SEED = {
       ovr: 83,
       ...skater(83, "gk"),
       anger: 94,
+      ineligible: true,
       note: "High anger.",
       gp: 0, goals: 0, assists: 0, saves: 0,
     },
@@ -109,16 +110,35 @@ export const SEED = {
       note: "Low skill. High compete and IQ.",
       gp: 0, goals: 0, assists: 0,
     },
+    {
+      id: "p-gordon",
+      name: "Mason Gordon",
+      teamId: "rico",
+      pos: "—",
+      ovr: null,
+      gp: 0, goals: 0, assists: 0,
+    },
 
     { id: "p-daniels", name: "Brett Daniels", teamId: "bnb", pos: "GK", ovr: 79, ...skater(79, "gk"), gp: 0, goals: 0, assists: 0, saves: 0 },
     { id: "p-varano", name: "Mark Varano", teamId: "bnb", pos: "ST", ovr: 88, ...skater(88, "st"), gp: 0, goals: 0, assists: 0 },
     { id: "p-schwarz", name: "Ben Schwarz", teamId: "bnb", pos: "ST", ovr: 78, ...skater(78, "st"), gp: 0, goals: 0, assists: 0 },
     { id: "p-murdock", name: "Landon Murdock", teamId: "bnb", pos: "CB", ovr: 81, ...skater(81, "def"), gp: 0, goals: 0, assists: 0 },
+    { id: "p-tober", name: "Mikey Tober", teamId: "bnb", pos: "ST", ovr: 78, ...skater(78, "st"), gp: 0, goals: 0, assists: 0 },
 
     { id: "p-grislis", name: "Brady Grislis", teamId: "showtime", pos: "ST", ovr: 97, ...skater(97, "st"), gp: 0, goals: 0, assists: 0 },
     { id: "p-hayward", name: "James Hayward", teamId: "showtime", pos: "GK", ovr: 89, ...skater(89, "gk"), gp: 0, goals: 0, assists: 0, saves: 0 },
     { id: "p-gerum", name: "Max Gerum", teamId: "showtime", pos: "CB", ovr: 84, ...skater(84, "def"), gp: 0, goals: 0, assists: 0 },
     { id: "p-falls", name: "Fred Falls", teamId: "showtime", pos: "ST", ovr: 73, ...skater(73, "st"), gp: 0, goals: 0, assists: 0 },
+    {
+      id: "p-pacheco",
+      name: "Colten Pacheco",
+      aka: "Stache",
+      teamId: "showtime",
+      pos: "ST",
+      ovr: 82,
+      ...skater(82, "st"),
+      gp: 0, goals: 0, assists: 0,
+    },
   ],
   games: [
     // Week 1 — Sun Sep 20 & Wed Sep 23
@@ -171,7 +191,7 @@ export const SEED = {
       date: "2026-09-18",
       kicker: "Season preview",
       title: "The wait is almost over",
-      body: "Fret Footy is locked in for 2026 and the countdown is on. Four clubs, full rosters, Sundays and Wednesdays from September 20 through October 28. Dukes FC, Rico Footy, Team BNB, and Team Showtime are ready. Kickoff cannot come soon enough.",
+      body: "Fret Footy is locked in for 2026 and the countdown is on. Four clubs, full rosters, Sundays and Wednesdays from September 20 through October 28. Dukes FC, Rico Footy, Team Sins, and Team Showtime are ready. Kickoff cannot come soon enough.",
     },
   ],
 };
