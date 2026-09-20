@@ -5,7 +5,7 @@ import {
   loadLeague, saveLeague, resetLeague, hasAdmin, setAdminPassword, loginAdmin,
   isAdmin, logoutAdmin, standings, teamById, latestPower, uid, saveVideoFile,
   loadVideoFile, youtubeId,
-} from "./store.js?v=19";
+} from "./store.js?v=20";
 
 const app = document.getElementById("app");
 const ui = {

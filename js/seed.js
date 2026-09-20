@@ -187,13 +187,6 @@ export const SEED = {
   videos: [],
   news: [
     {
-      id: "n2",
-      date: "2026-09-20",
-      kicker: "Gameday",
-      title: "Fret Footy opens Monday",
-      body: "Kickoff is Monday, September 21. The Week 1 Showcase Championship sends Dukes FC against Rico Footy to open the 2026 season — Nathan Dono vs Uncle Ricardo’s side, with Nolan Wrenn currently ineligible. The nightcap is Team Sins vs Team Showtime, Grislis at 97 against Varano and the new Sins crest. First points of the year. Let’s go.",
-    },
-    {
       id: "n1",
       date: "2026-09-18",
       kicker: "Season preview",
