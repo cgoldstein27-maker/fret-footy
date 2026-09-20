@@ -95,7 +95,7 @@ tr.clickable:hover { background: rgba(200, 16, 46, 0.18); }
   overflow: hidden; flex-shrink: 0;
 }
 .crest.logo {
-  width: 36px; height: 36px; border-radius: 50%; background: #fff; padding: 0;
+  width: 36px; height: 36px; border-radius: 50%; background: #000; padding: 0;
   border: 2px solid var(--crest, #ea580c);
 }
 .crest.logo.lg { width: 88px; height: 88px; border-width: 3px; }

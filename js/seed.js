@@ -20,7 +20,7 @@ export const SEED = {
   teams: [
     { id: "dukes", name: "Dukes FC", short: "DUK", color: "#0d4d2b", color2: "#ffffff", logo: "img/dukes-fc.jpg" },
     { id: "rico", name: "Rico Footy", short: "RICO", color: "#ea580c", color2: "#111111", logo: "img/rico-footy.jpg", coach: "Uncle Ricardo", coachTitle: "GM / Coach" },
-    { id: "bnb", name: "Team Sins", short: "SIN", color: "#0b1220", color2: "#d4a017", logo: "img/bnb.png" },
+    { id: "bnb", name: "Team Sins", short: "SIN", color: "#7a2be2", color2: "#e10600", logo: "img/sins.jpg" },
     { id: "showtime", name: "Team Showtime", short: "SHOW", color: "#7a1020", color2: "#f4c430", logo: "img/showtime.png" },
   ],
   players: [
