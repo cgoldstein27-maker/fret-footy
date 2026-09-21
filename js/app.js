@@ -5,12 +5,12 @@ import {
   loadLeague, saveLeague, resetLeague, hasAdmin, setAdminPassword, loginAdmin,
   isAdmin, logoutAdmin, standings, teamById, latestPower, uid, saveVideoFile,
   loadVideoFile, youtubeId,
-} from "./store.js?v=20";
+} from "./store.js?v=21";
 
 const app = document.getElementById("app");
 const ui = {
   view: (location.hash.replace("#", "") || "home"),
-  adminTab: "games",
+  adminTab: "home",
   teamId: null,
   playerId: null,
   toast: null,
@@ -236,6 +236,30 @@ async function handle(act, el) {
       persist();
       toast(`Week ${week} power rankings published.`);
     },
+    "save-home-news": () => {
+      data.home = data.home || { news: {}, spot: {} };
+      data.home.news = {
+        heading: val(el, "heading") || "News",
+        kicker: val(el, "kicker"),
+        title: val(el, "title"),
+        body: val(el, "body"),
+      };
+      persist();
+      toast("News card published.");
+    },
+    "save-home-spot": () => {
+      data.home = data.home || { news: {}, spot: {} };
+      const teamId = val(el, "teamId");
+      const team = teamById(data, teamId);
+      data.home.spot = {
+        heading: val(el, "heading") || "#1 this week",
+        teamId,
+        title: val(el, "title") || team?.name || "",
+        body: val(el, "body"),
+      };
+      persist();
+      toast("Spotlight card published.");
+    },
     "add-video": async () => {
       const title = val(el, "title");
       if (!title) return toast("Need a video title.");
@@ -284,7 +308,9 @@ async function handle(act, el) {
 function viewHome() {
   const table = standings(data).slice(0, 4);
   const upcoming = data.games.filter((g) => !g.played).slice(0, 3);
-  const power = latestPower(data);
+  const news = data.home?.news || {};
+  const spot = data.home?.spot || {};
+  const spotTeam = teamById(data, spot.teamId);
   return `
     <section class="hero">
       <div class="hero-main">
@@ -295,13 +321,19 @@ function viewHome() {
       </div>
       <div class="hero-side">
         <div class="card">
-          <h3>News</h3>
-          ${latestNews()}
+          <h3>${esc(news.heading || "News")}</h3>
+          ${news.kicker || news.title || news.body ? `
+            ${news.kicker ? `<div class="kicker">${esc(news.kicker)}</div>` : ""}
+            ${news.title ? `<div>${esc(news.title)}</div>` : ""}
+            ${news.body ? `<div class="muted">${esc(news.body)}</div>` : ""}
+          ` : `<p class="muted">Update this card in Admin → Home.</p>`}
         </div>
         <div class="card">
-          <h3>#1 this week</h3>
-          <div>${esc(teamById(data, power?.ranks?.[0]?.teamId)?.name || "Unranked")}</div>
-          <div class="muted">${esc(power?.ranks?.[0]?.note || "Publish rankings in Admin.")}</div>
+          <h3>${esc(spot.heading || "#1 this week")}</h3>
+          ${spot.title || spot.body || spotTeam ? `
+            <div>${spotTeam ? crest(spotTeam) : ""}${esc(spot.title || spotTeam?.name || "")}</div>
+            ${spot.body ? `<div class="muted">${esc(spot.body)}</div>` : ""}
+          ` : `<p class="muted">Update this card in Admin → Home.</p>`}
         </div>
       </div>
     </section>
@@ -316,16 +348,6 @@ function viewHome() {
         ${upcoming.length ? upcoming.map(matchRow).join("") : `<p class="muted">No upcoming games yet.</p>`}
       </div>
     </div>`;
-}
-
-function latestNews() {
-  const items = [...(data.news || [])].sort((a, b) => String(b.date).localeCompare(String(a.date)));
-  const n = items[0];
-  if (!n) return `<p class="muted">No news yet.</p>`;
-  return `
-    <div class="kicker">${esc(n.kicker || "League news")}</div>
-    <div>${esc(n.title)}</div>
-    <div class="muted">${esc(n.body)}</div>`;
 }
 
 function standingsTable(rows) {
@@ -548,6 +570,7 @@ function viewAdmin() {
     </div>`;
   }
   const tabs = [
+    ["home", "Home cards"],
     ["league", "League"],
     ["teams", "Teams"],
     ["players", "Players"],
@@ -566,12 +589,38 @@ function viewAdmin() {
     ${adminPanels()[ui.adminTab] || adminPanels().games}`;
 }
 
-function teamOptions(selected) {
-  return data.teams.map((t) => `<option value="${t.id}" ${t.id === selected ? "selected" : ""}>${esc(t.name)}</option>`).join("");
+function teamOptions(selected, includeBlank = false) {
+  const blank = includeBlank ? `<option value="">None</option>` : "";
+  return blank + data.teams.map((t) => `<option value="${t.id}" ${t.id === selected ? "selected" : ""}>${esc(t.name)}</option>`).join("");
 }
 
 function adminPanels() {
+  const news = data.home?.news || {};
+  const spot = data.home?.spot || {};
   return {
+    home: `
+      <div class="card">
+        <h3>News card</h3>
+        <p class="faint">This is the top-right card on Home. Edit any line, hit publish, and it updates on the homepage.</p>
+        <form class="form-grid" style="margin-top:12px" data-act="save-home-news">
+          <label class="field">Card title <input name="heading" value="${esc(news.heading || "News")}" /></label>
+          <label class="field">Kicker <input name="kicker" value="${esc(news.kicker || "")}" placeholder="GAMEDAY" /></label>
+          <label class="field span">Headline <input name="title" value="${esc(news.title || "")}" /></label>
+          <label class="field span">Body <textarea name="body" rows="5">${esc(news.body || "")}</textarea></label>
+          <div><button class="btn gold" type="submit">Publish news</button></div>
+        </form>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h3>Spotlight card</h3>
+        <p class="faint">This is the card under News. Heading, team crest, name, and write-up are all yours.</p>
+        <form class="form-grid" style="margin-top:12px" data-act="save-home-spot">
+          <label class="field">Card title <input name="heading" value="${esc(spot.heading || "#1 this week")}" /></label>
+          <label class="field">Team crest <select name="teamId">${teamOptions(spot.teamId, true)}</select></label>
+          <label class="field span">Headline <input name="title" value="${esc(spot.title || "")}" /></label>
+          <label class="field span">Body <textarea name="body" rows="4">${esc(spot.body || "")}</textarea></label>
+          <div><button class="btn gold" type="submit">Publish spotlight</button></div>
+        </form>
+      </div>`,
     league: `
       <div class="card">
         <form class="form-grid" data-act="save-league">

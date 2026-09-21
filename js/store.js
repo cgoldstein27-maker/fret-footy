@@ -3,7 +3,7 @@
  * Viewers see whatever is stored here. Export the JSON if you want a backup.
  */
 
-import { SEED } from "./seed.js?v=20";
+import { SEED } from "./seed.js?v=21";
 
 const DATA_KEY = "ssl_league_fret_v7";
 const ADMIN_KEY = "ssl_admin_v1";
@@ -30,6 +30,15 @@ function mergeGames(seedGames, savedGames) {
   });
 }
 
+function mergeHome(seed, saved) {
+  const fallback = seed.home || {};
+  const extra = saved.home || {};
+  return {
+    news: { ...(fallback.news || {}), ...(extra.news || {}) },
+    spot: { ...(fallback.spot || {}), ...(extra.spot || {}) },
+  };
+}
+
 export function loadLeague() {
   const seed = clone(SEED);
   let saved = {};
@@ -50,8 +59,9 @@ export function loadLeague() {
     teams: [...seed.teams, ...extraTeams],
     players: [...seed.players, ...extraPlayers],
     games: mergeGames(seed.games, saved.games),
-    powerRankings: seed.powerRankings,
-    news: seed.news || [],
+    powerRankings: saved.powerRankings || seed.powerRankings,
+    news: saved.news || seed.news || [],
+    home: mergeHome(seed, saved),
     videos: saved.videos || seed.videos,
   };
   localStorage.setItem(DATA_KEY, JSON.stringify(data));

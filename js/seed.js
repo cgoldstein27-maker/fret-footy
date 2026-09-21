@@ -194,4 +194,18 @@ export const SEED = {
       body: "Fret Footy is locked in for 2026 and the countdown is on. Four clubs, full rosters, Sundays and Wednesdays from September 21 through October 28. Dukes FC, Rico Footy, Team Sins, and Team Showtime are ready. Kickoff cannot come soon enough.",
     },
   ],
+  home: {
+    news: {
+      heading: "News",
+      kicker: "Season preview",
+      title: "The wait is almost over",
+      body: "Fret Footy is locked in for 2026 and the countdown is on. Four clubs, full rosters, Sundays and Wednesdays from September 21 through October 28. Dukes FC, Rico Footy, Team Sins, and Team Showtime are ready. Kickoff cannot come soon enough.",
+    },
+    spot: {
+      heading: "#1 this week",
+      teamId: "showtime",
+      title: "Team Showtime",
+      body: "Brady Grislis at 97 OVR is the best player in Fret Footy. Hayward is a 89 in net.",
+    },
+  },
 };
