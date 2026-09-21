@@ -2,10 +2,11 @@
  * Public league site + a private admin desk for stats and videos.
  */
 import {
-  loadLeague, saveLeague, resetLeague, hasAdmin, setAdminPassword, loginAdmin,
-  isAdmin, logoutAdmin, clearAdminPassword, standings, teamById, latestPower, uid, saveVideoFile,
+  loadLeague, loadLeagueSync, saveLeague, resetLeague, hasAdmin, setAdminPassword, loginAdmin,
+  isAdmin, logoutAdmin, clearAdminPassword, hasGithubToken, setGithubToken, clearGithubToken,
+  publishLive, standings, teamById, latestPower, uid, saveVideoFile,
   loadVideoFile, youtubeId,
-} from "./store.js?v=22";
+} from "./store.js?v=23";
 
 const app = document.getElementById("app");
 const ui = {
@@ -17,11 +18,16 @@ const ui = {
   powerWeek: null,
 };
 
-let data = loadLeague();
+let data = loadLeagueSync();
 
 function persist() {
   saveLeague(data);
 }
+
+loadLeague().then((next) => {
+  data = next;
+  render();
+});
 
 window.addEventListener("hashchange", () => {
   ui.view = location.hash.replace("#", "") || "home";
@@ -160,6 +166,22 @@ async function handle(act, el) {
       persist();
       toast("League info saved.");
     },
+    "save-github-token": () => {
+      const res = setGithubToken(val(el, "token"));
+      toast(res.ok ? "Live publish is on. Admin saves will update the public site." : res.error);
+      if (res.ok) publishLive(data).then((pub) => {
+        toast(pub.ok ? "Current league published to the live site." : (pub.error || "Token saved."));
+      });
+    },
+    "clear-github-token": () => {
+      clearGithubToken();
+      toast("Live publish turned off. Saves still stay on this computer.");
+    },
+    "publish-now": async () => {
+      persist();
+      const res = await publishLive(data);
+      toast(res.skipped ? "Saved here. Add a GitHub token below to update the public site." : res.ok ? "Published to the live site." : res.error);
+    },
     "add-team": () => {
       const name = val(el, "name");
       if (!name) return toast("Need a team name.");
@@ -180,7 +202,7 @@ async function handle(act, el) {
         name,
         teamId: val(el, "teamId"),
         pos: val(el, "pos") || "CM",
-        ovr: Number(val(el, "ovr")) || 70,
+        ovr: val(el, "ovr") === "" ? null : Number(val(el, "ovr")) || 70,
         pace: Number(val(el, "pace")) || 70,
         shoot: Number(val(el, "shoot")) || 70,
         pass: Number(val(el, "pass")) || 70,
@@ -193,6 +215,28 @@ async function handle(act, el) {
       });
       persist();
       toast("Player added.");
+    },
+    "save-player": () => {
+      const p = data.players.find((x) => x.id === el.dataset.id);
+      if (!p) return;
+      p.name = val(el, "name") || p.name;
+      p.teamId = val(el, "teamId") || p.teamId;
+      p.pos = val(el, "pos") || p.pos;
+      p.ovr = val(el, "ovr") === "" ? null : Number(val(el, "ovr"));
+      persist();
+      toast("Player saved.");
+    },
+    "delete-player": () => {
+      if (!confirm(`Remove ${el.dataset.name || "this player"}?`)) return;
+      data.players = data.players.filter((p) => p.id !== el.dataset.id);
+      persist();
+      toast("Player removed.");
+    },
+    "delete-video": () => {
+      if (!confirm("Remove this video from the site?")) return;
+      data.videos = data.videos.filter((v) => v.id !== el.dataset.id);
+      persist();
+      toast("Video removed.");
     },
     "add-game": () => {
       data.games.push({
@@ -645,6 +689,18 @@ function adminPanels() {
           <label class="field">Current week <input name="week" type="number" value="${data.week}" /></label>
           <div><button class="btn gold" type="submit">Save</button></div>
         </form>
+        <p class="faint" style="margin-top:12px">Every admin save stays on this computer through reloads and site updates.</p>
+        <p style="margin-top:10px"><button class="btn gold" data-act="publish-now">Save & publish live</button></p>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h3>Update the public site</h3>
+        <p class="faint">Without a token, only this browser sees your edits. Paste a GitHub token once so players, news, scores, and YouTube film go live for everyone.</p>
+        <p class="faint">Create a fine-grained token at github.com/settings/tokens with access to <strong>cgoldstein27-maker/fret-footy</strong> and Contents: Read and write.</p>
+        <form class="form-grid" style="margin-top:12px" data-act="save-github-token">
+          <label class="field span">GitHub token <input name="token" type="password" autocomplete="off" placeholder="${hasGithubToken() ? "Token saved on this browser" : "ghp_..."}" /></label>
+          <div><button class="btn gold" type="submit">${hasGithubToken() ? "Replace token" : "Turn on live publish"}</button></div>
+        </form>
+        ${hasGithubToken() ? `<p style="margin-top:10px"><button class="btn ghost" data-act="clear-github-token">Turn off live publish</button></p>` : ""}
         <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn" data-act="export">Download backup JSON</button>
           <form data-act="import-data" style="display:flex;gap:8px;align-items:end">
@@ -653,7 +709,6 @@ function adminPanels() {
           </form>
           <button class="btn danger" data-act="reset">Reset sample data</button>
         </div>
-        <p class="faint" style="margin-top:12px">This computer stores the live league. Download a backup if you want to move it.</p>
       </div>`,
     teams: `
       <div class="card">
@@ -667,6 +722,7 @@ function adminPanels() {
       </div>`,
     players: `
       <div class="card">
+        <h3>Add player</h3>
         <form class="form-grid" data-act="add-player">
           <label class="field">Name <input name="name" required /></label>
           <label class="field">Team <select name="teamId">${teamOptions()}</select></label>
@@ -682,7 +738,17 @@ function adminPanels() {
           <label class="field">Assists <input name="assists" type="number" value="0" /></label>
           <div><button class="btn gold" type="submit">Add player</button></div>
         </form>
-      </div>`,
+      </div>
+      ${data.players.map((p) => `<div class="card" style="margin-top:12px">
+        <form class="form-grid" data-act="save-player" data-id="${p.id}">
+          <label class="field">Name <input name="name" value="${esc(p.name)}" /></label>
+          <label class="field">Team <select name="teamId">${teamOptions(p.teamId)}</select></label>
+          <label class="field">Pos <input name="pos" value="${esc(p.pos || "")}" /></label>
+          <label class="field">OVR <input name="ovr" type="number" value="${p.ovr ?? ""}" /></label>
+          <div><button class="btn" type="submit">Save</button></div>
+          <div><button class="btn danger" type="button" data-act="delete-player" data-id="${p.id}" data-name="${esc(p.name)}">Remove</button></div>
+        </form>
+      </div>`).join("")}`,
     games: `
       <div class="card">
         <h3>Add fixture</h3>
@@ -747,7 +813,12 @@ function adminPanels() {
           <label class="field">Note <input name="note" placeholder="optional" /></label>
           <button class="btn gold" type="submit">Post video</button>
         </form>
-        <p class="faint" style="margin-top:10px">YouTube links work for anyone. A file upload stays on this computer unless you also add a public link.</p>
+        <p class="faint" style="margin-top:10px">YouTube links work for anyone on the live site. A file upload stays on this computer unless you also add a public link.</p>
+        ${data.videos.map((v) => `<div class="card" style="margin-top:12px">
+          <strong>${esc(v.title)}</strong>
+          <div class="faint">${v.url ? esc(v.url) : "File on this computer"}</div>
+          <p style="margin-top:8px"><button class="btn danger" data-act="delete-video" data-id="${v.id}">Remove</button></p>
+        </div>`).join("")}
       </div>`,
   };
 }
