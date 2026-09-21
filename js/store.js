@@ -3,7 +3,7 @@
  * Viewers see whatever is stored here. Export the JSON if you want a backup.
  */
 
-import { SEED } from "./seed.js?v=21";
+import { SEED } from "./seed.js?v=22";
 
 const DATA_KEY = "ssl_league_fret_v7";
 const ADMIN_KEY = "ssl_admin_v1";
@@ -97,9 +97,21 @@ export async function setAdminPassword(password) {
 export async function loginAdmin(password) {
   const stored = localStorage.getItem(ADMIN_KEY);
   if (!stored) return { ok: false, error: "No admin password yet." };
-  if ((await hash(password)) !== stored) return { ok: false, error: "Wrong password." };
-  sessionStorage.setItem(SESSION_KEY, "1");
-  return { ok: true };
+  const raw = String(password ?? "");
+  const options = [...new Set([raw, raw.trim()].filter((p) => p.length > 0))];
+  if (!options.length) return { ok: false, error: "Wrong password." };
+  for (const p of options) {
+    if ((await hash(p)) === stored) {
+      sessionStorage.setItem(SESSION_KEY, "1");
+      return { ok: true };
+    }
+  }
+  return { ok: false, error: "Wrong password." };
+}
+
+export function clearAdminPassword() {
+  localStorage.removeItem(ADMIN_KEY);
+  sessionStorage.removeItem(SESSION_KEY);
 }
 
 export function isAdmin() {

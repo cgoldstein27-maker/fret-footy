@@ -3,9 +3,9 @@
  */
 import {
   loadLeague, saveLeague, resetLeague, hasAdmin, setAdminPassword, loginAdmin,
-  isAdmin, logoutAdmin, standings, teamById, latestPower, uid, saveVideoFile,
+  isAdmin, logoutAdmin, clearAdminPassword, standings, teamById, latestPower, uid, saveVideoFile,
   loadVideoFile, youtubeId,
-} from "./store.js?v=21";
+} from "./store.js?v=22";
 
 const app = document.getElementById("app");
 const ui = {
@@ -98,9 +98,8 @@ function render() {
 function bind() {
   app.onclick = (e) => {
     if (e.target.closest("input, textarea, select, option, label")) return;
-    if (e.target.closest("form[data-act]")) return;
     const el = e.target.closest("[data-act]");
-    if (!el) return;
+    if (!el || el.tagName === "FORM") return;
     if (el.dataset.act?.startsWith("close") && e.target.closest("[data-stop]") && e.target !== el) return;
     handle(el.dataset.act, el);
   };
@@ -118,7 +117,15 @@ function bind() {
 }
 
 function val(form, name) {
-  return form.querySelector(`[name="${name}"]`)?.value?.trim() || "";
+  if (form?.tagName === "FORM") {
+    const fd = new FormData(form);
+    if (fd.has(name)) return String(fd.get(name) ?? "").trim();
+  }
+  return form?.querySelector?.(`[name="${name}"]`)?.value?.trim() || "";
+}
+
+function passwordFrom(el) {
+  return el?.querySelector?.('[name="password"]')?.value ?? val(el, "password");
 }
 
 async function handle(act, el) {
@@ -130,12 +137,19 @@ async function handle(act, el) {
     "power-week": () => { ui.powerWeek = Number(el.dataset.id || el.value); render(); },
     "admin-tab": () => { ui.adminTab = el.dataset.id; render(); },
     "admin-setup": async () => {
-      const res = await setAdminPassword(val(el, "password"));
+      const res = await setAdminPassword(passwordFrom(el));
       toast(res.ok ? "Admin password saved. You are in." : res.error);
+      render();
     },
     "admin-login": async () => {
-      const res = await loginAdmin(val(el, "password"));
+      const res = await loginAdmin(passwordFrom(el));
       toast(res.ok ? "Welcome back." : res.error);
+      render();
+    },
+    "admin-reset": () => {
+      if (!confirm("Clear the saved admin password on this browser so you can set a new one?")) return;
+      clearAdminPassword();
+      toast("Password cleared. Set a new one.");
       render();
     },
     "admin-logout": () => { logoutAdmin(); go("home"); },
@@ -553,8 +567,8 @@ function viewAdmin() {
       <div class="kicker">First time</div>
       <h1>Set admin password</h1>
       <p class="muted">This is your private desk. Viewers never see this page unless they know the password.</p>
-      <form class="grid" style="margin-top:16px" data-act="admin-setup">
-        <label class="field">Password <input name="password" type="password" required minlength="4" /></label>
+      <form class="grid" style="margin-top:16px" data-act="admin-setup" autocomplete="on">
+        <label class="field">Password <input name="password" type="password" required minlength="4" autocomplete="new-password" /></label>
         <button class="btn gold" type="submit">Create admin access</button>
       </form>
     </div>`;
@@ -563,10 +577,12 @@ function viewAdmin() {
     return `<div class="card admin-login">
       <div class="kicker">Private</div>
       <h1>Admin login</h1>
-      <form class="grid" style="margin-top:16px" data-act="admin-login">
-        <label class="field">Password <input name="password" type="password" required /></label>
+      <form class="grid" style="margin-top:16px" data-act="admin-login" autocomplete="on">
+        <label class="field">Password <input name="password" id="admin-password" type="password" required autocomplete="current-password" /></label>
         <button class="btn gold" type="submit">Log in</button>
       </form>
+      <p class="faint" style="margin-top:14px">The password lives only in this browser. The live site and localhost are separate logins.</p>
+      <p style="margin-top:10px"><button class="btn ghost" type="button" data-act="admin-reset">Reset password</button></p>
     </div>`;
   }
   const tabs = [
