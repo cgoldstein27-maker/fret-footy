@@ -13,6 +13,7 @@ const ui = {
   view: (location.hash.replace("#", "") || "home"),
   adminTab: "home",
   teamId: null,
+  scheduleTeamId: null,
   playerId: null,
   toast: null,
   powerWeek: null,
@@ -142,6 +143,7 @@ async function handle(act, el) {
     player: () => { ui.playerId = el.dataset.id; render(); },
     "close-modal": () => { ui.playerId = null; render(); },
     "power-week": () => { ui.powerWeek = Number(el.dataset.id || el.value); render(); },
+    "schedule-team": () => { ui.scheduleTeamId = el.dataset.id || null; go("schedule"); },
     "admin-tab": () => { ui.adminTab = el.dataset.id; render(); },
     "admin-setup": async () => {
       const res = await setAdminPassword(passwordFrom(el));
@@ -270,7 +272,7 @@ async function handle(act, el) {
         g.away = Number(away);
       }
       persist();
-      toast("Score saved. Standings updated.");
+      toast("Score saved. Standings and schedule updated.");
     },
     "save-pred": () => {
       const g = data.games.find((x) => x.id === el.dataset.id);
@@ -512,32 +514,61 @@ function formatMatchDate(iso) {
   return new Date(y, m - 1, d).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric", year: "numeric" });
 }
 
+function matchPlayed(g) {
+  return !!(g.played && g.home != null && g.away != null);
+}
+
 function matchRow(g) {
   const home = teamById(data, g.homeId);
   const away = teamById(data, g.awayId);
+  const played = matchPlayed(g);
+  const homeWin = played && Number(g.home) > Number(g.away);
+  const awayWin = played && Number(g.away) > Number(g.home);
+  const score = played ? `${g.home}–${g.away}` : "vs";
+  const teamId = ui.scheduleTeamId;
+  let result = "";
+  if (played && teamId && (g.homeId === teamId || g.awayId === teamId)) {
+    const gf = g.homeId === teamId ? Number(g.home) : Number(g.away);
+    const ga = g.homeId === teamId ? Number(g.away) : Number(g.home);
+    const mark = gf > ga ? "w" : gf < ga ? "l" : "d";
+    const label = mark === "w" ? "W" : mark === "l" ? "L" : "D";
+    result = `<span class="result ${mark}">${label}</span>`;
+  }
+  const name = (team, win) => win ? `<strong>${esc(team?.name)}</strong>` : esc(team?.name);
   return `<div class="match">
-    <div class="side">${crest(home)} ${esc(home?.name)}</div>
-    <div class="score">vs</div>
-    <div class="side away">${esc(away?.name)} ${crest(away)}</div>
+    <div class="side">${crest(home)} ${name(home, homeWin)}</div>
+    <div class="score${played ? " played" : ""}">${score}</div>
+    <div class="side away">${name(away, awayWin)} ${crest(away)}</div>
   </div>
-  <div class="faint">${g.label ? `${esc(g.label)} · ` : ""}${esc(formatMatchDate(g.date))}</div>`;
+  <div class="faint">${result}${g.label ? `${esc(g.label)} · ` : ""}${esc(formatMatchDate(g.date))}</div>`;
 }
 
 function viewSchedule() {
-  const weeks = [...new Set(data.games.map((g) => g.week))].sort((a, b) => a - b);
-  return `<div class="kicker">2026 season</div><h1>Schedule</h1>
-    <p class="muted">Every team plays each Sunday and Wednesday. 12 games a side. Season starts September 21.</p>
-    ${weeks.map((w) => {
-      const games = data.games.filter((g) => g.week === w);
-      const days = [...new Set(games.map((g) => g.date))];
+  const team = ui.scheduleTeamId ? teamById(data, ui.scheduleTeamId) : null;
+  const games = team
+    ? data.games.filter((g) => g.homeId === team.id || g.awayId === team.id)
+    : data.games;
+  const record = team ? standings(data).find((t) => t.id === team.id) : null;
+  const weeks = [...new Set(games.map((g) => g.week))].sort((a, b) => a - b);
+  return `<div class="kicker">2026 season</div><h1>${team ? `${crest(team, "lg")} ${esc(team.name)}` : "Schedule"}</h1>
+    <p class="muted">${team
+      ? `${record.gp} played · ${record.w}-${record.d}-${record.l} · ${record.gf} goals for, ${record.ga} against`
+      : "Every team plays each Sunday and Wednesday. 12 games a side. Season starts September 21. Entered scores show on each match."}</p>
+    <div class="tabs" style="margin-top:14px">
+      <button class="tab ${!team ? "active" : ""}" data-act="schedule-team" data-id="">All teams</button>
+      ${data.teams.map((t) => `<button class="tab ${ui.scheduleTeamId === t.id ? "active" : ""}" data-act="schedule-team" data-id="${t.id}">${crest(t)} ${esc(t.name)}</button>`).join("")}
+    </div>
+    ${weeks.length ? weeks.map((w) => {
+      const weekGames = games.filter((g) => g.week === w);
+      const days = [...new Set(weekGames.map((g) => g.date))];
       return `<div class="card" style="margin-top:14px">
         <h3>Week ${w}</h3>
         ${days.map((day) => `
           <div class="muted" style="margin-top:12px">${esc(formatMatchDate(day))}</div>
-          ${games.filter((g) => g.date === day).map(matchRow).join("")}
+          ${weekGames.filter((g) => g.date === day).map(matchRow).join("")}
         `).join("")}
       </div>`;
-    }).join("")}`;
+    }).join("") : `<p class="muted">No matches for this club yet.</p>`}`;
 }
 
 function viewRankings() {

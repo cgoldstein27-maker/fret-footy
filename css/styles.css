@@ -121,6 +121,11 @@ tr.clickable:hover { background: rgba(200, 16, 46, 0.18); }
 .match .side { display: flex; align-items: center; gap: 8px; }
 .match .side.away { justify-content: flex-end; text-align: right; }
 .score { font-family: var(--display); font-size: 26px; letter-spacing: .08em; color: #fff; }
+.score.played { color: #fff; }
+.result { font-weight: 800; letter-spacing: .06em; margin-right: 6px; }
+.result.w { color: #fff; }
+.result.l { color: #c8102e; }
+.result.d { color: rgba(255, 255, 255, .7); }
 .pred { font-size: 12px; color: #c8102e; }
 
 .rank-row {
