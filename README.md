@@ -4,7 +4,9 @@ School soccer league site for Dukes FC, Rico Footy, Team Sins, and Team Showtime
 
 **Live site:** [https://cgoldstein27-maker.github.io/fret-footy/](https://cgoldstein27-maker.github.io/fret-footy/)
 
-Public pages cover standings, player overalls, the schedule, power rankings, news, and film. Admin is a private desk on the same site for updating all of that.
+**Season spotlight:** [https://cgoldstein27-maker.github.io/fret-footy/spotlight.html](https://cgoldstein27-maker.github.io/fret-footy/spotlight.html)
+
+Public pages cover standings, player overalls, the schedule, power rankings, news, film, and the season spotlight. Admin is a private desk on the same site for updating all of that.
 
 This is a fan-made school league page. It is not affiliated with any professional club.
 
@@ -41,6 +43,7 @@ If login fails, use **Reset password** on the Admin screen and set it again.
 | Path | What it is |
 | --- | --- |
 | `index.html` | Single page |
+| `spotlight.html` | Season spotlight |
 | `css/styles.css` | Layout and Fret Footy colors |
 | `js/app.js` | Public views and admin desk |
 | `js/store.js` | Saves, admin login, live publish |
