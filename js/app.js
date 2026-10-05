@@ -81,6 +81,7 @@ function header() {
       </button>
       <nav class="nav">
         ${views.map(([id, label]) => `<button class="${ui.view === id ? "active" : ""}" data-act="nav" data-view="${id}">${label}</button>`).join("")}
+        <a href="spotlight.html">Spotlight</a>
         <button class="${ui.view === "admin" ? "active" : ""}" data-act="nav" data-view="admin">Admin</button>
       </nav>
     </header>`;
