@@ -8,7 +8,7 @@ School soccer league site for Dukes FC, Rico Footy, Team Sins, and Team Showtime
 
 Public pages cover standings, player overalls, the schedule, power rankings, news, film, and the season spotlight. Admin is a private desk on the same site for updating all of that.
 
-This is a fan-made school league page. It is not affiliated with any professional club.
+This is the official school league site for Fret Footy.
 
 ## Run locally
 
