@@ -6,7 +6,7 @@ import {
   isAdmin, logoutAdmin, clearAdminPassword, hasGithubToken, setGithubToken, clearGithubToken,
   publishLive, standings, teamById, latestPower, uid, saveVideoFile,
   loadVideoFile, youtubeId,
-} from "./store.js?v=23";
+} from "./store.js?v=47";
 
 const app = document.getElementById("app");
 const ui = {
@@ -455,6 +455,7 @@ function viewPlayers() {
         ${list.map((p) => {
           const t = teamById(data, p.teamId);
           return `<div class="player-card" data-act="player" data-id="${p.id}">
+            ${p.photo ? `<img class="player-face" src="${esc(p.photo)}" alt="" />` : ""}
             <span class="ovr">${ovrLabel(p)}</span>
             <span class="pos">${esc(p.pos)}</span>
             <div>
@@ -491,16 +492,22 @@ function playerModal() {
     ["IQ", p.iq],
     ["Anger", p.anger],
   ].filter(([, v]) => v != null);
-  return `<div class="modal-bg" data-act="close-modal"><div class="modal" data-stop="1">
-    <div class="kicker">${esc(t?.name)} · ${esc(p.pos)}${t?.coach ? ` · ${esc(t.coachTitle || "Coach")} ${esc(t.coach)}` : ""}</div>
-    <h2>${esc(p.name)} ${p.aka ? `<span class="faint">“${esc(p.aka)}”</span>` : ""} <span class="ovr">${ovrLabel(p)}</span></h2>
-    ${p.ineligible ? `<p class="ineligible">Currently ineligible</p>` : ""}
-    <p class="muted">${p.gp || 0} GP · ${p.goals || 0} goals · ${p.assists || 0} assists${p.saves ? ` · ${p.saves} saves` : ""}</p>
-    ${p.note ? `<p class="muted">${esc(p.note)}</p>` : ""}
-    <div class="attrs" style="margin-top:14px">
-      ${bars.map(([k, v]) => `<span>${k}</span><div class="bar"><i style="width:${clamp(v)}%"></i></div>`).join("")}
+  return `<div class="modal-bg" data-act="close-modal"><div class="modal profile-modal" data-stop="1">
+    <div class="profile">
+      ${p.photo ? `<img class="profile-photo" src="${esc(p.photo)}" alt="${esc(p.name)}" />` : `<div class="profile-photo empty"><span class="ovr">${ovrLabel(p)}</span></div>`}
+      <div>
+        <div class="kicker">${esc(t?.name)} · ${esc(p.pos)}${t?.coach ? ` · ${esc(t.coachTitle || "Coach")} ${esc(t.coach)}` : ""}</div>
+        <h2>${esc(p.name)} ${p.aka ? `<span class="faint">“${esc(p.aka)}”</span>` : ""}</h2>
+        <div class="profile-ovr"><span class="ovr">${ovrLabel(p)}</span><span class="faint">Overall</span></div>
+        ${p.ineligible ? `<p class="ineligible">Currently ineligible</p>` : ""}
+        <p class="muted">${p.gp || 0} GP · ${p.goals || 0} goals · ${p.assists || 0} assists${p.saves ? ` · ${p.saves} saves` : ""}</p>
+        ${p.note ? `<p class="muted">${esc(p.note)}</p>` : ""}
+        <div class="attrs" style="margin-top:14px">
+          ${bars.map(([k, v]) => `<span>${k}</span><div class="bar"><i style="width:${clamp(v)}%"></i></div>`).join("")}
+        </div>
+        <div style="margin-top:16px;text-align:right"><button class="btn" data-act="close-modal">Close</button></div>
+      </div>
     </div>
-    <div style="margin-top:16px;text-align:right"><button class="btn" data-act="close-modal">Close</button></div>
   </div></div>`;
 }
 

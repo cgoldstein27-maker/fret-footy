@@ -3,7 +3,7 @@
  * Seed is only the first-run default. Admin edits are the source of truth.
  */
 
-import { SEED } from "./seed.js?v=23";
+import { SEED } from "./seed.js?v=47";
 
 const DATA_KEY = "ssl_league_fret";
 const OLD_KEYS = ["ssl_league_fret_v7", "ssl_league_fret_v6", "ssl_league_fret_v5", "ssl_league_fret_v4", "ssl_league_fret_v3"];
@@ -65,14 +65,34 @@ function mergeHome(seed, saved) {
   };
 }
 
+function withSeedPhotos(players, seed) {
+  const savedById = Object.fromEntries((players || []).map((p) => [p.id, p]));
+  return (seed.players || []).map((seeded) => {
+    const saved = savedById[seeded.id];
+    if (!saved) return { ...seeded };
+    const row = { ...saved, name: seeded.name, teamId: seeded.teamId, ovr: seeded.ovr };
+    for (const key of ["pace", "shoot", "pass", "defend", "gk"]) {
+      if (seeded[key] != null) row[key] = seeded[key];
+    }
+    if (seeded.photo) row.photo = seeded.photo;
+    else delete row.photo;
+    return row;
+  });
+}
+
+function withSeedLogos(teams, seed) {
+  const byId = Object.fromEntries((seed.teams || []).map((t) => [t.id, t]));
+  return (teams || []).map((t) => (byId[t.id]?.logo ? { ...t, logo: byId[t.id].logo } : t));
+}
+
 function hydrate(base) {
   const seed = clone(SEED);
   const saved = base && looksLikeLeague(base) ? base : seed;
   return {
     ...seed,
     ...saved,
-    teams: saved.teams?.length ? saved.teams : seed.teams,
-    players: saved.players?.length ? saved.players : seed.players,
+    teams: withSeedLogos(saved.teams?.length ? saved.teams : seed.teams, seed),
+    players: withSeedPhotos(saved.players?.length ? saved.players : seed.players, seed),
     games: saved.games?.length ? saved.games : seed.games,
     powerRankings: saved.powerRankings?.length ? saved.powerRankings : seed.powerRankings,
     news: saved.news || seed.news || [],
