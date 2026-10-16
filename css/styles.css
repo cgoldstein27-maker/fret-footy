@@ -168,6 +168,10 @@ tr.clickable:hover { background: rgba(200, 16, 46, 0.18); }
 }
 .field textarea { min-height: 96px; resize: vertical; }
 .form-grid .span { grid-column: 1 / -1; }
+.match-stats { display: grid; gap: 8px; margin-top: 8px; max-width: 440px; }
+.stat-club { display: flex; align-items: center; gap: 8px; color: #fff; font-weight: 700; margin-top: 6px; }
+.stat-row { display: grid; grid-template-columns: 1fr 64px 64px; gap: 8px; align-items: end; }
+.stat-row > span { color: #fff; font-size: 14px; padding-bottom: 8px; }
 .admin-login { max-width: 420px; margin: 40px auto; }
 .toast {
   position: fixed; right: 16px; bottom: 16px; background: var(--card-2);

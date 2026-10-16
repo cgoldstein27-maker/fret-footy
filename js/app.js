@@ -6,7 +6,7 @@ import {
   isAdmin, logoutAdmin, clearAdminPassword, hasGithubToken, setGithubToken, clearGithubToken,
   publishLive, standings, teamById, latestPower, uid, saveVideoFile,
   loadVideoFile, youtubeId,
-} from "./store.js?v=47";
+} from "./store.js?v=50";
 
 const app = document.getElementById("app");
 const ui = {
@@ -20,6 +20,7 @@ const ui = {
 };
 
 let data = loadLeagueSync();
+tallyMatchStats();
 
 function persist() {
   saveLeague(data);
@@ -27,6 +28,7 @@ function persist() {
 
 loadLeague().then((next) => {
   data = next;
+  tallyMatchStats();
   render();
 });
 
@@ -271,8 +273,10 @@ async function handle(act, el) {
         g.home = Number(home);
         g.away = Number(away);
       }
+      g.events = readMatchEvents(el);
+      tallyMatchStats();
       persist();
-      toast("Score saved. Standings and schedule updated.");
+      toast("Score saved. Standings, schedule, and player stats updated.");
     },
     "save-pred": () => {
       const g = data.games.find((x) => x.id === el.dataset.id);
@@ -521,6 +525,79 @@ function formatMatchDate(iso) {
   return new Date(y, m - 1, d).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric", year: "numeric" });
 }
 
+function squad(teamId) {
+  return data.players.filter((p) => p.teamId === teamId);
+}
+
+function readMatchEvents(form) {
+  const events = [];
+  form.querySelectorAll("input[name^='mg-']").forEach((input) => {
+    const playerId = input.name.slice(3);
+    const goals = Math.max(0, Number(input.value) || 0);
+    const assists = Math.max(0, Number(form.querySelector(`[name="ma-${playerId}"]`)?.value) || 0);
+    if (goals || assists) events.push({ playerId, goals, assists });
+  });
+  return events;
+}
+
+function tallyMatchStats() {
+  const goals = {};
+  const assists = {};
+  const gp = {};
+  for (const g of data.games) {
+    if (!matchPlayed(g)) continue;
+    for (const p of [...squad(g.homeId), ...squad(g.awayId)]) {
+      if (p.ineligible) continue;
+      gp[p.id] = (gp[p.id] || 0) + 1;
+    }
+    for (const e of g.events || []) {
+      goals[e.playerId] = (goals[e.playerId] || 0) + (Number(e.goals) || 0);
+      assists[e.playerId] = (assists[e.playerId] || 0) + (Number(e.assists) || 0);
+    }
+  }
+  for (const p of data.players) {
+    p.goals = goals[p.id] || 0;
+    p.assists = assists[p.id] || 0;
+    p.gp = gp[p.id] || 0;
+  }
+}
+
+function matchStatFields(g) {
+  const home = squad(g.homeId);
+  const away = squad(g.awayId);
+  const row = (p) => {
+    const ev = (g.events || []).find((e) => e.playerId === p.id) || {};
+    return `<div class="stat-row">
+      <span>${esc(p.name)}</span>
+      <label class="field">G <input name="mg-${p.id}" type="number" min="0" value="${ev.goals || 0}" /></label>
+      <label class="field">A <input name="ma-${p.id}" type="number" min="0" value="${ev.assists || 0}" /></label>
+    </div>`;
+  };
+  const club = (teamId) => {
+    const team = teamById(data, teamId);
+    return `<div class="stat-club">${crest(team)} ${esc(team?.name)}</div>`;
+  };
+  return `<div class="span match-stats">
+    <div class="kicker">Goals and assists</div>
+    ${club(g.homeId)}
+    ${home.map(row).join("")}
+    ${club(g.awayId)}
+    ${away.map(row).join("")}
+  </div>`;
+}
+
+function scorersLine(g) {
+  const bits = (g.events || []).map((e) => {
+    const p = data.players.find((x) => x.id === e.playerId);
+    if (!p) return "";
+    const parts = [];
+    if (e.goals) parts.push(`${e.goals}G`);
+    if (e.assists) parts.push(`${e.assists}A`);
+    return `${esc(p.name)} ${parts.join(" ")}`;
+  }).filter(Boolean);
+  return bits.length ? `<div class="faint">${bits.join(" · ")}</div>` : "";
+}
+
 function matchPlayed(g) {
   return !!(g.played && g.home != null && g.away != null);
 }
@@ -547,7 +624,8 @@ function matchRow(g) {
     <div class="score${played ? " played" : ""}">${score}</div>
     <div class="side away">${name(away, awayWin)} ${crest(away)}</div>
   </div>
-  <div class="faint">${result}${g.label ? `${esc(g.label)} · ` : ""}${esc(formatMatchDate(g.date))}</div>`;
+  <div class="faint">${result}${g.label ? `${esc(g.label)} · ` : ""}${esc(formatMatchDate(g.date))}</div>
+  ${scorersLine(g)}`;
 }
 
 function viewSchedule() {
@@ -807,8 +885,9 @@ function adminPanels() {
         return `<div class="card" style="margin-top:12px">
           <strong>Week ${g.week}</strong> · ${esc(home?.name)} vs ${esc(away?.name)}
           <form class="form-grid" style="margin-top:10px" data-act="save-score" data-id="${g.id}">
-            <label class="field">${esc(home?.short)} <input name="home" type="number" value="${g.home ?? ""}" /></label>
-            <label class="field">${esc(away?.short)} <input name="away" type="number" value="${g.away ?? ""}" /></label>
+            <label class="field">${esc(home?.short)} <input name="home" type="number" min="0" value="${g.home ?? ""}" /></label>
+            <label class="field">${esc(away?.short)} <input name="away" type="number" min="0" value="${g.away ?? ""}" /></label>
+            ${matchStatFields(g)}
             <div><button class="btn" type="submit">Save score</button></div>
           </form>
           <form class="form-grid" style="margin-top:8px" data-act="save-pred" data-id="${g.id}">
