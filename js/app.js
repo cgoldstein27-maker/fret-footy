@@ -72,6 +72,7 @@ function header() {
     ["schedule", "Schedule"],
     ["rankings", "Power rankings"],
     ["videos", "Videos"],
+    ["play", "Play"],
   ];
   return `
     <header class="site-header">
@@ -98,6 +99,7 @@ function render() {
     schedule: viewSchedule,
     rankings: viewRankings,
     videos: viewVideos,
+    play: viewPlay,
     admin: viewAdmin,
   }[ui.view] || viewHome;
   app.innerHTML = header() + `<main class="wrap">${page()}</main>` + (ui.toast ? `<div class="toast">${esc(ui.toast)}</div>` : "") + (ui.playerId ? playerModal() : "");
@@ -692,6 +694,14 @@ function viewRankings() {
         </div>`;
       }).join("") || `<p class="muted">No upcoming games to pick.</p>`}
     </div>`;
+}
+
+function viewPlay() {
+  return `
+    <div class="kicker">Penalty Shooters 2</div>
+    <h1>Play</h1>
+    <p class="muted">Take penalties in the browser. The game opens here inside Fret Footy.</p>
+    <iframe class="play-frame" title="Penalty Shooters 2" src="games/penalty-src/index.html" allow="fullscreen; autoplay" allowfullscreen></iframe>`;
 }
 
 function viewVideos() {

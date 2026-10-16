@@ -58,6 +58,10 @@ a { color: #c8102e; }
 .btn:disabled { opacity: .45; transform: none; }
 
 .wrap { max-width: 1120px; margin: 0 auto; padding: 28px 20px 80px; }
+.play-frame {
+  width: 100%; aspect-ratio: 16 / 9; margin-top: 16px;
+  border: 1px solid var(--line); border-radius: 16px; background: #000; display: block;
+}
 .hero {
   display: grid; grid-template-columns: 1.3fr .7fr; gap: 20px; margin-bottom: 28px;
 }
