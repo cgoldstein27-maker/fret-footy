@@ -12,6 +12,12 @@
     "TEAM SINS": ["DANIELS", "VARANO", "SCHWARZ", "FAN", "TOBER"],
     "SHOWTIME": ["GRISLIS", "HAYWARD", "GERUM", "PACHECO"]
   };
+  var OVERALL = {
+    DONO: 95, SCHINDLER: 78, DORIAN: 87, ZOOMS: 76,
+    RIVET: 86, PROULX: 67, WRENN: 83, GOLDSTEIN: 80, GORDON: 75,
+    DANIELS: 79, VARANO: 88, SCHWARZ: 78, FAN: 81, TOBER: 84,
+    GRISLIS: 97, HAYWARD: 87, GERUM: 84, PACHECO: 90
+  };
   var TEAM_NAMES = ["DUKES FC", "RICO FOOTY", "TEAM SINS", "SHOWTIME"];
   var LAYOUT_W = 800;
   var LAYOUT_H = 450;
@@ -70,7 +76,7 @@
     jersey.innerHTML = '<svg viewBox="0 0 ' + width + ' ' + height + '" width="100%" height="100%" aria-hidden="true">' + parts.join("") + "</svg>";
   }
 
-  var shoot = { key: "", userQ: [], oppQ: [], sig: null, who: "", shotNum: null };
+  var shoot = { key: "", userQ: [], oppQ: [], sig: null, who: "", shotNum: null, ovr: 0 };
 
   function onScreen(inst) {
     return inst && inst.x > -20 && inst.y > 80 && inst.y < 220 && inst.x < LAYOUT_W && inst.visible !== false && inst.opacity !== 0;
@@ -162,6 +168,8 @@
     var printW = Math.max(54, Math.min(118, shirtPx * 1.15));
 
     paintJersey(name);
+    shoot.ovr = OVERALL[name] || 75;
+    if (who === "player") tuneAim(rt, shoot.ovr);
     jersey.style.display = "block";
     jersey.style.width = Math.round(printW) + "px";
     jersey.style.height = Math.round(printW * 0.28) + "px";
@@ -169,13 +177,21 @@
     jersey.style.top = (canvasRect.top - rootRect.top + nameY * scaleY) + "px";
   }
 
+  var REGULAR_ROUNDS = [
+    [[0, 1], [2, 3]],
+    [[0, 2], [1, 3]],
+    [[0, 3], [1, 2]]
+  ];
   var SEASON_ROUNDS = [
-    [[1, 0], [2, 3]],
-    [[3, 1], [0, 2]],
+    [[0, 1], [2, 3]],
+    [[0, 2], [1, 3]],
     [[3, 0], [1, 2]],
-    [[0, 1], [3, 2]],
-    [[1, 3], [2, 0]],
-    [[0, 3], [2, 1]]
+    [[1, 0], [3, 2]],
+    [[2, 0], [3, 1]],
+    [[0, 3], [2, 1]],
+    [[0, 1], [2, 3]],
+    [[2, 0], [3, 1]],
+    [[3, 0], [1, 2]]
   ];
   var RATINGS = [87, 84, 84, 90];
   var MATCH_LAYOUTS = { matchIntro: 1, matchIntroV2: 1, ballFlight3: 1, actionPS: 1, beforeMatch: 1 };
@@ -274,12 +290,32 @@
     return { userId: userId, played: [], semis: [null, null], final: null, pending: null };
   }
 
-  function hasResult(home, away) {
-    return season.played.some(function (match) { return match.home === home && match.away === away; });
+  function playedCount(home, away) {
+    var count = 0;
+    season.played.forEach(function (match) {
+      if (match.home === home && match.away === away) count++;
+    });
+    return count;
+  }
+
+  function scheduledThrough(home, away, roundCount) {
+    var rounds = schedule();
+    var count = 0;
+    var limit = roundCount == null ? rounds.length : roundCount;
+    for (var r = 0; r < limit && r < rounds.length; r++) {
+      rounds[r].forEach(function (pair) {
+        if (pair[0] === home && pair[1] === away) count++;
+      });
+    }
+    return count;
+  }
+
+  function stillDue(home, away, round) {
+    return playedCount(home, away) < scheduledThrough(home, away, round + 1);
   }
 
   function recordResult(home, away, hg, ag) {
-    if (hasResult(home, away)) return;
+    if (playedCount(home, away) >= scheduledThrough(home, away)) return;
     season.played.push({ home: home, away: away, hg: hg, ag: ag });
   }
 
@@ -309,14 +345,19 @@
     return rows;
   }
 
+  function schedule() {
+    return mode === "classic" ? REGULAR_ROUNDS : SEASON_ROUNDS;
+  }
+
   function leagueRound() {
-    for (var r = 0; r < SEASON_ROUNDS.length; r++) {
-      var open = SEASON_ROUNDS[r].some(function (pair) {
-        return !hasResult(pair[0], pair[1]);
+    var rounds = schedule();
+    for (var r = 0; r < rounds.length; r++) {
+      var open = rounds[r].some(function (pair) {
+        return stillDue(pair[0], pair[1], r);
       });
       if (open) return r;
     }
-    return SEASON_ROUNDS.length;
+    return rounds.length;
   }
 
   function clubCell(id, mine) {
@@ -345,8 +386,8 @@
       "<p class='ff-kicker'>FRET FOOTY CUP</p>",
       "<h2>Choose a mode</h2>",
       "<div class='ff-choices'>",
-      "<button class='ff-choice' data-ff-mode='season'><strong>Season</strong><span>Play every club twice, home and away. The table seeds the playoffs: 1st against 4th, 2nd against 3rd, then the final.</span></button>",
-      "<button class='ff-choice' data-ff-mode='classic'><strong>Classic tournament</strong><span>The original cup. Meet every club once in the group, then the knockout.</span></button>",
+      "<button class='ff-choice' data-ff-mode='season'><strong>Season</strong><span>Play every club three times. The table seeds the playoffs: 1st against 4th, 2nd against 3rd, then the final.</span></button>",
+      "<button class='ff-choice' data-ff-mode='classic'><strong>Regular</strong><span>Play every club once, then the playoffs. 1st plays 4th, 2nd plays 3rd, and the winners meet in the final.</span></button>",
       "</div>"
     ].join(""), "choice");
   }
@@ -354,16 +395,17 @@
   function signed(n) { return n > 0 ? "+" + n : String(n); }
 
   function seasonScreen(rt) {
+    var rounds = schedule();
     var round = leagueRound();
     var rows = standings();
     var mine = season.userId;
     var body = [
-      "<p class='ff-kicker'>SEASON</p>",
-      "<h2>" + (round < SEASON_ROUNDS.length ? "Round " + (round + 1) + " of " + SEASON_ROUNDS.length : "Playoffs") + "</h2>"
+      "<p class='ff-kicker'>" + (mode === "classic" ? "REGULAR" : "SEASON") + "</p>",
+      "<h2>" + (round < rounds.length ? "Round " + (round + 1) + " of " + rounds.length : "Playoffs") + "</h2>"
     ];
-    if (round < SEASON_ROUNDS.length) {
-      var pair = SEASON_ROUNDS[round].filter(function (item) { return item.indexOf(mine) === -1; })[0];
-      if (pair && !hasResult(pair[0], pair[1])) {
+    if (round < rounds.length) {
+      var pair = rounds[round].filter(function (item) { return item.indexOf(mine) === -1; })[0];
+      if (pair && stillDue(pair[0], pair[1], round)) {
         var sim = simulateScore(rt, pair[0], pair[1]);
         recordResult(pair[0], pair[1], sim.hg, sim.ag);
         rows = standings();
@@ -373,8 +415,8 @@
         body.push("<tr><td class='club'>" + (index + 1) + " " + clubCell(row.id, row.id === mine) + "</td><td>" + row.p + "</td><td>" + signed(row.gd) + "</td><td>" + row.pts + "</td></tr>");
       });
       body.push("</tbody></table>");
-      var yours = SEASON_ROUNDS[round].filter(function (item) { return item.indexOf(mine) !== -1; })[0];
-      if (yours && !hasResult(yours[0], yours[1])) {
+      var yours = rounds[round].filter(function (item) { return item.indexOf(mine) !== -1; })[0];
+      if (yours && stillDue(yours[0], yours[1], round)) {
         body.push("<div class='ff-next'><p>Your match<br>" + TEAMS[yours[0]].name + " vs " + TEAMS[yours[1]].name + "</p><button class='ff-go' data-ff-play='" + yours[0] + "," + yours[1] + "'>Play</button></div>");
       }
     } else {
@@ -383,7 +425,7 @@
       rows.forEach(function (row, index) {
         body.push("<tr><td class='club'>" + (index + 1) + " " + clubCell(row.id, row.id === mine) + "</td><td>" + row.p + "</td><td>" + signed(row.gd) + "</td><td>" + row.pts + "</td></tr>");
       });
-      body.push("</tbody></table><p class='ff-kicker'>1ST VS 4TH · 2ND VS 3RD</p>");
+      body.push("</tbody></table><p class='ff-kicker'>PLAYOFFS</p>");
       ensurePlayoffs(rt, seeds);
       body.push(playoffTie("Semifinal", seeds[0], seeds[3], season.semis[0], mine));
       body.push(playoffTie("Semifinal", seeds[1], seeds[2], season.semis[1], mine));
@@ -395,7 +437,7 @@
           season.final = { home: finalists[0], away: finalists[1], hg: simFinal.hg, ag: simFinal.ag, winner: simFinal.hg > simFinal.ag ? finalists[0] : finalists[1] };
         }
         body.push(playoffTie("Final", finalists[0], finalists[1], season.final, mine));
-        if (season.final) body.push("<h2>" + TEAMS[season.final.winner].name + " win the season</h2>");
+        if (season.final) body.push("<h2>" + TEAMS[season.final.winner].name + (mode === "classic" ? " win the regular season" : " win the season") + "</h2>");
       }
     }
     body.push("<button class='ff-menu' data-ff-menu='1'>Main menu</button>");
@@ -461,10 +503,10 @@
     if (pending.playoff) {
       var winner = hg > ag ? pending.home : pending.away;
       var pack = { home: pending.home, away: pending.away, hg: hg, ag: ag, winner: winner };
-      var round = leagueRound();
-      if (round >= SEASON_ROUNDS.length && !season.final && season.semis[0] && season.semis[1]) season.final = pack;
+      var seeds = season.seeds || standings().map(function (row) { return row.id; });
+      var bothSemis = season.semis[0] && season.semis[1];
+      if (!season.final && bothSemis && leagueRound() >= schedule().length) season.final = pack;
       else {
-        var seeds = standings().map(function (row) { return row.id; });
         var first = (pending.home === seeds[0] && pending.away === seeds[3]) || (pending.home === seeds[3] && pending.away === seeds[0]);
         season.semis[first ? 0 : 1] = pack;
         if (season.semis[0] && season.semis[1]) {
@@ -519,16 +561,7 @@
       lastLayout = layout;
       return;
     }
-    if (mode === "classic") {
-      hideScrim();
-      banner.style.display = layout === "beforeMatchGroups" || layout === "knockoutPhase" ? "block" : "none";
-      banner.textContent = "Classic tournament";
-      ui.style.display = banner.style.display === "block" ? "block" : "none";
-      if (banner.style.display === "block") ui.style.pointerEvents = "none";
-      lastLayout = layout;
-      return;
-    }
-    if (mode !== "season") {
+    if (mode !== "season" && mode !== "classic") {
       hideScrim();
       banner.style.display = "none";
       ui.style.display = "none";
@@ -547,7 +580,7 @@
     if (layout === "teamPick") {
       hideScrim();
       banner.style.display = "block";
-      banner.textContent = "Season · pick your club";
+      banner.textContent = "Fret Footy Conference";
       ui.style.display = "block";
       ui.style.pointerEvents = "none";
       lastLayout = layout;
@@ -569,6 +602,100 @@
     lastLayout = layout;
   }
 
+  function tuneAim(rt, overall) {
+    var skill = Math.max(0, Math.min(1, (overall - 60) / 40));
+    var period = 0.55 + skill * 2.3;
+    var sweep = 460 - skill * 260;
+    (rt.types.t33 && rt.types.t33.u || []).forEach(function (inst) {
+      (inst.Y || []).forEach(function (beh) {
+        if (!beh || beh.$e == null || beh.Qc == null || !beh.G || beh.G.length < 8) return;
+        beh.$e = period;
+        beh.Qc = sweep;
+        beh.G[3] = period;
+        beh.G[7] = sweep;
+      });
+    });
+  }
+
+  var roar = new Audio("media/crowd_middle_goal.m4a");
+  roar.volume = 1;
+  var horn = new Audio("https://www.myinstants.com/media/sounds/boston-bruins-goal-horn-2011-2012-mp3cut.mp3");
+  horn.preload = "auto";
+  var lastGoalSound = null;
+  var goalsSeen = null;
+  var celebratedAt = 0;
+  var hornTimer = 0;
+  var hornShot = null;
+
+  function stopHorn() {
+    hornTimer = 0;
+    horn.pause();
+    try { horn.currentTime = 0; } catch (e) {}
+  }
+
+  function playHorn(rt) {
+    stopHorn();
+    hornShot = Number(globalValue(rt, "shotNumber"));
+    horn.volume = 1;
+    try { horn.currentTime = 0; } catch (e) {}
+    var played = horn.play();
+    if (played && played.catch) played.catch(function () {});
+    hornTimer = Date.now();
+  }
+
+  function watchHorn(rt) {
+    if (!hornTimer) return;
+    var shot = Number(globalValue(rt, "shotNumber"));
+    if (Date.now() - hornTimer >= 5000 || (!isNaN(hornShot) && !isNaN(shot) && shot !== hornShot)) stopHorn();
+  }
+
+  function boostCrowd() {
+    try {
+      roar.currentTime = 0;
+      var played = roar.play();
+      if (played && played.catch) played.catch(function () {});
+    } catch (e) {}
+    var sound = lastGoalSound;
+    if (!sound) return;
+    sound.volume = 2.6;
+    if (sound.Xb && sound.Xb.gain) sound.Xb.gain.value = 2.6;
+  }
+
+  function celebrate(rt) {
+    var now = Date.now();
+    if (now - celebratedAt < 4000) return;
+    celebratedAt = now;
+    boostCrowd();
+    playHorn(rt);
+  }
+
+  function hookCrowd(rt) {
+    var audio = rt && rt.mi;
+    if (!audio || audio.ffHooked || typeof audio.IQ !== "function") return;
+    audio.ffHooked = true;
+    var orig = audio.IQ;
+    audio.IQ = function () {
+      var sound = orig.apply(this, arguments);
+      if (sound && typeof sound.src === "string" && sound.src.indexOf("crowd_middle_goal") !== -1) {
+        setTimeout(function () {
+          if (sound.volume > 0.2) lastGoalSound = sound;
+        }, 0);
+      }
+      return sound;
+    };
+  }
+
+  function watchGoals(rt) {
+    var shoot = Number(globalValue(rt, "tempResultPlayer")) + Number(globalValue(rt, "tempResultCPU"));
+    if (isNaN(shoot)) return;
+    if (goalsSeen == null) {
+      goalsSeen = shoot;
+      return;
+    }
+    if (shoot > goalsSeen) celebrate(rt);
+    goalsSeen = shoot;
+  }
+
   function tick() {
     requestAnimationFrame(tick);
     var rt = window.cr_getC2Runtime && window.cr_getC2Runtime();
@@ -579,6 +706,24 @@
     }
 
     runMode(rt);
+    hookCrowd(rt);
+    watchGoals(rt);
+    watchHorn(rt);
+
+    if (layoutName(rt) === "teamPick") {
+      Object.keys(rt.types).forEach(function (key) {
+        (rt.types[key].u || []).forEach(function (inst) {
+          var text = inst.text && String(inst.text).trim();
+          if (text && /^group\b/i.test(text)) {
+            inst.opacity = 0;
+            inst.visible = false;
+          }
+        });
+      });
+      (rt.types.t105 && rt.types.t105.u || []).forEach(function (row) {
+        row.opacity = 0;
+      });
+    }
 
     var buttons = (rt.types.t85.u || []).filter(onScreen).sort(function (a, b) { return a.x - b.x; });
     var labels = (rt.types.t71 && rt.types.t71.u || []).filter(onScreen).sort(function (a, b) { return a.x - b.x; });

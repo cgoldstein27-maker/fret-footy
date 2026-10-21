@@ -700,7 +700,7 @@ function viewPlay() {
   return `
     <div class="kicker">Penalty Shooters 2</div>
     <h1>Play</h1>
-    <p class="muted">Take penalties in the browser. Choose a season, or the classic tournament, then play as your Fret Footy club.</p>
+    <p class="muted">Take penalties in the browser. Play a full season, or a shorter regular season, then the playoffs as your Fret Footy club.</p>
     <iframe class="play-frame" title="Penalty Shooters 2" src="games/penalty-src/index.html" allow="fullscreen; autoplay" allowfullscreen></iframe>`;
 }
 
