@@ -227,8 +227,12 @@
     "#ff-mode-ui .ff-you{color:#f2c14b;}",
     "#ff-mode-ui .ff-next{display:flex;justify-content:space-between;gap:12px;align-items:center;background:#14181f;border:1px solid #3a3128;border-radius:12px;padding:12px;margin-top:8px;}",
     "#ff-mode-ui .ff-next p{margin:0;font-family:Arial,sans-serif;font-size:14px;}",
-    "#ff-mode-ui button.ff-go,#ff-mode-ui button.ff-menu{font:inherit;letter-spacing:.06em;border:0;border-radius:999px;padding:10px 16px;cursor:pointer;background:#e23b4a;color:white;}",
+    "#ff-mode-ui .ff-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}",
+    "#ff-mode-ui button.ff-go,#ff-mode-ui button.ff-menu,#ff-mode-ui button.ff-sim{font:inherit;letter-spacing:.06em;border:0;border-radius:999px;padding:10px 16px;cursor:pointer;background:#e23b4a;color:white;}",
+    "#ff-mode-ui button.ff-sim{background:transparent;color:#f4f1ea;border:1px solid #3a3128;}",
     "#ff-mode-ui button.ff-menu{background:transparent;color:#d9d3c7;border:1px solid #3a3128;margin-top:12px;}",
+    "#ff-mode-ui .ff-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}",
+    "#ff-mode-ui .ff-row button.ff-menu{margin-top:0;}",
     "#ff-mode-ui .ff-tie{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.08);font-family:Arial,sans-serif;}",
     "#ff-mode-ui .ff-score{font-family:rockoultraflfregular,Impact,sans-serif;letter-spacing:.04em;}",
     "@media (max-width:720px){#ff-mode-ui .ff-choices{grid-template-columns:1fr;}}",
@@ -237,6 +241,29 @@
     "<div class='ff-banner' id='ff-banner' style='display:none'></div>"
   ].join("");
   root.appendChild(ui);
+
+  var siteBack = document.createElement("button");
+  siteBack.id = "ff-site-back";
+  siteBack.type = "button";
+  siteBack.textContent = "Back";
+  siteBack.setAttribute("aria-label", "Back to the website");
+  siteBack.style.cssText = "position:absolute;top:8px;left:8px;z-index:40;font:600 13px/1 Arial,sans-serif;letter-spacing:.04em;padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.35);background:rgba(10,6,8,.86);color:#fff;cursor:pointer;";
+  siteBack.addEventListener("click", function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    backToSite();
+  });
+  root.appendChild(siteBack);
+
+  function backToSite() {
+    var url = new URL("../../index.html", window.location.href).href;
+    try {
+      if (window.top && window.top !== window) window.top.location.href = url;
+      else window.location.href = url;
+    } catch (e) {
+      window.location.href = url;
+    }
+  }
 
   function setGlobal(rt, name, value) {
     [rt.cq, rt.yX].forEach(function (list) {
@@ -388,7 +415,8 @@
       "<div class='ff-choices'>",
       "<button class='ff-choice' data-ff-mode='season'><strong>Season</strong><span>Play every club three times. The table seeds the playoffs: 1st against 4th, 2nd against 3rd, then the final.</span></button>",
       "<button class='ff-choice' data-ff-mode='classic'><strong>Regular</strong><span>Play every club once, then the playoffs. 1st plays 4th, 2nd plays 3rd, and the winners meet in the final.</span></button>",
-      "</div>"
+      "</div>",
+      "<div class='ff-row'><button class='ff-menu' data-ff-site='1'>Back to site</button></div>"
     ].join(""), "choice");
   }
 
@@ -417,7 +445,7 @@
       body.push("</tbody></table>");
       var yours = rounds[round].filter(function (item) { return item.indexOf(mine) !== -1; })[0];
       if (yours && stillDue(yours[0], yours[1], round)) {
-        body.push("<div class='ff-next'><p>Your match<br>" + TEAMS[yours[0]].name + " vs " + TEAMS[yours[1]].name + "</p><button class='ff-go' data-ff-play='" + yours[0] + "," + yours[1] + "'>Play</button></div>");
+        body.push("<div class='ff-next'><p>Your match<br>" + TEAMS[yours[0]].name + " vs " + TEAMS[yours[1]].name + "</p><div class='ff-actions'><button class='ff-go' data-ff-play='" + yours[0] + "," + yours[1] + "'>Play</button><button class='ff-sim' data-ff-sim='" + yours[0] + "," + yours[1] + "'>Simulate</button></div></div>");
       }
     } else {
       var seeds = rows.map(function (row) { return row.id; });
@@ -437,10 +465,10 @@
           season.final = { home: finalists[0], away: finalists[1], hg: simFinal.hg, ag: simFinal.ag, winner: simFinal.hg > simFinal.ag ? finalists[0] : finalists[1] };
         }
         body.push(playoffTie("Final", finalists[0], finalists[1], season.final, mine));
-        if (season.final) body.push("<h2>" + TEAMS[season.final.winner].name + (mode === "classic" ? " win the regular season" : " win the season") + "</h2>");
+        if (season.final) body.push("<h2>" + TEAMS[season.final.winner].name + " wins the Fret Footy Cup</h2>");
       }
     }
-    body.push("<button class='ff-menu' data-ff-menu='1'>Main menu</button>");
+    body.push("<div class='ff-row'><button class='ff-menu' data-ff-menu='1'>Main menu</button><button class='ff-menu' data-ff-site='1'>Back to site</button></div>");
     showScrim(body.join(""), JSON.stringify({
       played: season.played,
       semis: season.semis,
@@ -453,7 +481,7 @@
     var score = result
       ? "<span class='ff-score'>" + result.hg + " – " + result.ag + "</span>"
       : (home === mine || away === mine
-        ? "<button class='ff-go' data-ff-play='" + home + "," + away + "' data-ff-playoff='1'>Play</button>"
+        ? "<div class='ff-actions'><button class='ff-go' data-ff-play='" + home + "," + away + "' data-ff-playoff='1'>Play</button><button class='ff-sim' data-ff-sim='" + home + "," + away + "' data-ff-playoff='1'>Simulate</button></div>"
         : "<span>Simulating</span>");
     return "<div class='ff-tie'><div><div class='ff-kicker'>" + label + "</div>" + clubCell(home, home === mine) + "<br>" + clubCell(away, away === mine) + "</div>" + score + "</div>";
   }
@@ -500,35 +528,39 @@
     var hg = pending.home === mine ? ours : theirs;
     var ag = pending.away === mine ? ours : theirs;
     season.pending = null;
-    if (pending.playoff) {
-      var winner = hg > ag ? pending.home : pending.away;
-      var pack = { home: pending.home, away: pending.away, hg: hg, ag: ag, winner: winner };
-      var seeds = season.seeds || standings().map(function (row) { return row.id; });
-      var bothSemis = season.semis[0] && season.semis[1];
-      if (!season.final && bothSemis && leagueRound() >= schedule().length) season.final = pack;
-      else {
-        var first = (pending.home === seeds[0] && pending.away === seeds[3]) || (pending.home === seeds[3] && pending.away === seeds[0]);
-        season.semis[first ? 0 : 1] = pack;
-        if (season.semis[0] && season.semis[1]) {
-          var finalists = [season.semis[0].winner, season.semis[1].winner].sort(function (a, b) {
-            return seeds.indexOf(a) - seeds.indexOf(b);
-          });
-          if (finalists.indexOf(mine) === -1 && !season.final) {
-            var sim = simulateScore(rt, finalists[0], finalists[1]);
-            season.final = { home: finalists[0], away: finalists[1], hg: sim.hg, ag: sim.ag, winner: sim.hg > sim.ag ? finalists[0] : finalists[1] };
-          }
+    if (pending.playoff) savePlayoff(rt, pending.home, pending.away, hg, ag);
+    else recordResult(pending.home, pending.away, hg, ag);
+    return true;
+  }
+
+  function savePlayoff(rt, home, away, hg, ag) {
+    var mine = season.userId;
+    var winner = hg > ag ? home : away;
+    var pack = { home: home, away: away, hg: hg, ag: ag, winner: winner };
+    var seeds = season.seeds || standings().map(function (row) { return row.id; });
+    var bothSemis = season.semis[0] && season.semis[1];
+    if (!season.final && bothSemis && leagueRound() >= schedule().length) season.final = pack;
+    else {
+      var first = (home === seeds[0] && away === seeds[3]) || (home === seeds[3] && away === seeds[0]);
+      season.semis[first ? 0 : 1] = pack;
+      if (season.semis[0] && season.semis[1]) {
+        var finalists = [season.semis[0].winner, season.semis[1].winner].sort(function (a, b) {
+          return seeds.indexOf(a) - seeds.indexOf(b);
+        });
+        if (finalists.indexOf(mine) === -1 && !season.final) {
+          var sim = simulateScore(rt, finalists[0], finalists[1]);
+          season.final = { home: finalists[0], away: finalists[1], hg: sim.hg, ag: sim.ag, winner: sim.hg > sim.ag ? finalists[0] : finalists[1] };
         }
       }
-    } else {
-      recordResult(pending.home, pending.away, hg, ag);
     }
-    return true;
   }
 
   ui.addEventListener("click", function (event) {
     var choice = event.target.closest && event.target.closest("[data-ff-mode]");
     var play = event.target.closest && event.target.closest("[data-ff-play]");
+    var simBtn = event.target.closest && event.target.closest("[data-ff-sim]");
     var menu = event.target.closest && event.target.closest("[data-ff-menu]");
+    var siteBtn = event.target.closest && event.target.closest("[data-ff-site]");
     var rt = window.cr_getC2Runtime && window.cr_getC2Runtime();
     if (choice) {
       rememberMode(choice.getAttribute("data-ff-mode"));
@@ -536,11 +568,23 @@
       if (mode === "classic") ui.style.display = "none";
       return;
     }
+    if (siteBtn) {
+      backToSite();
+      return;
+    }
     if (menu && rt) {
       clearMode();
       hideScrim();
       ui.style.display = "none";
       goTo(rt, "mainMenu");
+      return;
+    }
+    if (simBtn && rt && season) {
+      var simulated = simBtn.getAttribute("data-ff-sim").split(",").map(Number);
+      var outcome = simulateScore(rt, simulated[0], simulated[1]);
+      if (simBtn.hasAttribute("data-ff-playoff")) savePlayoff(rt, simulated[0], simulated[1], outcome.hg, outcome.ag);
+      else recordResult(simulated[0], simulated[1], outcome.hg, outcome.ag);
+      seasonScreen(rt);
       return;
     }
     if (play && rt && season) {
