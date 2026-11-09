@@ -6,7 +6,7 @@ import {
   isAdmin, logoutAdmin, clearAdminPassword, hasGithubToken, setGithubToken, clearGithubToken,
   publishLive, standings, teamById, latestPower, uid, saveVideoFile,
   loadVideoFile, youtubeId,
-} from "./store.js?v=50";
+} from "./store.js?v=51";
 
 const app = document.getElementById("app");
 const ui = {
@@ -374,14 +374,15 @@ async function handle(act, el) {
 
 function viewHome() {
   const table = standings(data).slice(0, 4);
-  const upcoming = data.games.filter((g) => !g.played).slice(0, 3);
+  const upcoming = data.games.filter((g) => !matchPlayed(g)).slice(0, 3);
+  const seasonDone = data.games.length > 0 && data.games.every((g) => matchPlayed(g));
   const news = data.home?.news || {};
   const spot = data.home?.spot || {};
   const spotTeam = teamById(data, spot.teamId);
   return `
     <section class="hero">
       <div class="hero-main">
-        <div class="kicker">Week ${data.week}</div>
+        <div class="kicker">${seasonDone ? "Season complete" : `Week ${data.week}`}</div>
         <h1>${esc(data.leagueName)}</h1>
         <p class="sub">Standings, player overalls, the weekly slate, and power rankings — updated from the admin desk.</p>
         <p class="muted" style="margin-top:16px">${data.teams.map((t) => `${t.name}`).join(" · ")}</p>
@@ -411,8 +412,8 @@ function viewHome() {
         <p class="faint" style="margin-top:10px"><button class="btn small" data-act="nav" data-view="standings">Full standings</button></p>
       </div>
       <div class="card">
-        <h3>Next matches</h3>
-        ${upcoming.length ? upcoming.map(matchRow).join("") : `<p class="muted">No upcoming games yet.</p>`}
+        <h3>${upcoming.length ? "Next matches" : "Final week"}</h3>
+        ${upcoming.length ? upcoming.map(matchRow).join("") : `<p class="muted">Every match is played. The table is final.</p>`}
       </div>
     </div>`;
 }

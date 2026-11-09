@@ -3,7 +3,7 @@
  * Seed is only the first-run default. Admin edits are the source of truth.
  */
 
-import { SEED } from "./seed.js?v=50";
+import { SEED } from "./seed.js?v=51";
 
 const DATA_KEY = "ssl_league_fret";
 const OLD_KEYS = ["ssl_league_fret_v7", "ssl_league_fret_v6", "ssl_league_fret_v5", "ssl_league_fret_v4", "ssl_league_fret_v3"];
