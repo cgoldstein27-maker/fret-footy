@@ -3,7 +3,7 @@
  * Seed is only the first-run default. Admin edits are the source of truth.
  */
 
-import { SEED } from "./seed.js?v=51";
+import { SEED } from "./seed.js?v=52";
 
 const DATA_KEY = "ssl_league_fret";
 const OLD_KEYS = ["ssl_league_fret_v7", "ssl_league_fret_v6", "ssl_league_fret_v5", "ssl_league_fret_v4", "ssl_league_fret_v3"];
@@ -59,9 +59,11 @@ function readLocal() {
 function mergeHome(seed, saved) {
   const fallback = seed.home || {};
   const extra = saved?.home || {};
+  const spot = { ...(fallback.spot || {}), ...(extra.spot || {}) };
+  if (spot.heading === "Champions" && fallback.spot?.heading) spot.heading = fallback.spot.heading;
   return {
     news: { ...(fallback.news || {}), ...(extra.news || {}) },
-    spot: { ...(fallback.spot || {}), ...(extra.spot || {}) },
+    spot,
   };
 }
 

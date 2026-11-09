@@ -6,7 +6,7 @@ import {
   isAdmin, logoutAdmin, clearAdminPassword, hasGithubToken, setGithubToken, clearGithubToken,
   publishLive, standings, teamById, latestPower, uid, saveVideoFile,
   loadVideoFile, youtubeId,
-} from "./store.js?v=51";
+} from "./store.js?v=52";
 
 const app = document.getElementById("app");
 const ui = {
@@ -70,6 +70,7 @@ function header() {
     ["standings", "Standings"],
     ["players", "Players"],
     ["schedule", "Schedule"],
+    ["playoffs", "Playoffs"],
     ["rankings", "Power rankings"],
     ["videos", "Videos"],
     ["play", "Play"],
@@ -85,7 +86,7 @@ function header() {
       </button>
       <nav class="nav">
         ${views.map(([id, label]) => `<button class="${ui.view === id ? "active" : ""}" data-act="nav" data-view="${id}">${label}</button>`).join("")}
-        <a href="spotlight.html">Spotlight</a>
+        <a href="spotlight.html">Showcase</a>
         <button class="${ui.view === "admin" ? "active" : ""}" data-act="nav" data-view="admin">Admin</button>
       </nav>
     </header>`;
@@ -97,6 +98,7 @@ function render() {
     standings: viewStandings,
     players: viewPlayers,
     schedule: viewSchedule,
+    playoffs: viewPlayoffs,
     rankings: viewRankings,
     videos: viewVideos,
     play: viewPlay,
@@ -413,7 +415,8 @@ function viewHome() {
       </div>
       <div class="card">
         <h3>${upcoming.length ? "Next matches" : "Final week"}</h3>
-        ${upcoming.length ? upcoming.map(matchRow).join("") : `<p class="muted">Every match is played. The table is final.</p>`}
+        ${upcoming.length ? upcoming.map(matchRow).join("") : `<p class="muted">What a season. Showtime took the table with 19 points, and Rico stayed right on them with 18. Sins and Dukes both finished on 14, with Sins grabbing third on goal difference. The regular season is over, and we are genuinely excited to see what happens in the playoffs. November 20: Showtime against Dukes, Rico against Sins.</p>`}
+        <p class="faint" style="margin-top:10px"><button class="btn small" data-act="nav" data-view="playoffs">Playoff bracket</button></p>
       </div>
     </div>`;
 }
@@ -657,6 +660,53 @@ function viewSchedule() {
         `).join("")}
       </div>`;
     }).join("") : `<p class="muted">No matches for this club yet.</p>`}`;
+}
+
+function cupName(team) {
+  const names = { showtime: "Showtime", dukes: "Dukes", rico: "Rico", bnb: "Sins" };
+  return names[team?.id] || team?.short || team?.name || "";
+}
+
+function cupClub(team, seed) {
+  if (!team) return "";
+  return `<div class="cup-club">
+    ${team.logo ? `<img src="${esc(team.logo)}" alt="${esc(team.name)}" />` : `<span class="cup-logo-fallback">${esc(team.short || "")}</span>`}
+    <div class="cup-seed">#${seed}</div>
+    <div class="cup-name">${esc(cupName(team))}</div>
+  </div>`;
+}
+
+function viewPlayoffs() {
+  const [first, second, third, fourth] = standings(data);
+  return `
+    <div class="kicker">Fret Footy Cup</div>
+    <h1>Playoffs</h1>
+    <p class="muted">The stage is set. Rico faces Sins and Showtime faces off against Dukes. Who will we see meet in the Fret Footy Final?</p>
+    <div class="cup-board">
+      <div class="cup-col">
+        <div class="cup-flag">Semifinal</div>
+        ${cupClub(first, 1)}
+        <div class="cup-vs">VS</div>
+        ${cupClub(fourth, 4)}
+        <div class="cup-flag">Nov 20</div>
+      </div>
+      <div class="cup-mid">
+        <div class="cup-arm left" aria-hidden="true"><i></i><i></i></div>
+        <div class="cup-mark">
+          <div class="cup-word">Fret</div>
+          <div class="cup-word">Footy</div>
+          <div class="cup-word cup-word-sm">Cup</div>
+        </div>
+        <div class="cup-arm right" aria-hidden="true"><i></i><i></i></div>
+      </div>
+      <div class="cup-col">
+        <div class="cup-flag">Semifinal</div>
+        ${cupClub(second, 2)}
+        <div class="cup-vs">VS</div>
+        ${cupClub(third, 3)}
+        <div class="cup-flag">Nov 20</div>
+      </div>
+    </div>`;
 }
 
 function viewRankings() {

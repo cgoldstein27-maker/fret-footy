@@ -210,7 +210,7 @@ export const SEED = {
       body: "Twelve games, done. Team Showtime finishes first on 19 points. Rico Footy is second on 18. Team Sins and Dukes FC finish level on 14, with Sins ahead on goal difference.",
     },
     spot: {
-      heading: "Champions",
+      heading: "Regular season champions",
       teamId: "showtime",
       title: "Team Showtime",
       body: "Six wins and 19 points. Grislis finishes on 9 goals. Pacheco adds 8.",

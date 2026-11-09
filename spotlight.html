@@ -3,100 +3,160 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fret Footy — Project spec</title>
-  <meta name="description" content="One-page project spec for Fret Footy, the official 2026 school soccer league site." />
+  <title>Fret Footy — Final showcase</title>
+  <meta name="description" content="The 2026 Fret Footy final showcase. Regular season table, scoring leaders, and the November 20 semifinals." />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Condensed:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/spotlight.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/spotlight.css?v=3" />
 </head>
 <body>
   <main class="page">
-    <div class="bar"></div>
     <header class="mast">
-      <p class="kicker">PROJECT SPEC · 2026 SEASON</p>
-      <a href="index.html">League home</a>
+      <a class="brand" href="index.html">
+        <img src="img/fret-footy-logo.jpg" alt="Fret Footy" />
+        <span>2026 season</span>
+      </a>
+      <a class="back" href="index.html">League home</a>
     </header>
-    <h1>Fret Footy</h1>
-    <p class="lede">The official site for a four-club school soccer league: <strong>Dukes FC</strong>, <strong>Rico Footy</strong>, <strong>Team Sins</strong>, and <strong>Team Showtime</strong>. Sundays and Wednesdays, September 21 through October 28.</p>
 
-    <section class="shots">
-      <figure>
-        <img src="img/spotlight/shot-home.jpg" alt="Fret Footy home page, with the week one table and the next matches" />
-        <figcaption>HOME · THE TABLE AND THE WEEK</figcaption>
-      </figure>
-      <div class="pair">
-        <figure>
-          <img src="img/spotlight/shot-players.jpg" alt="Players and overalls, led by Brady Grislis at 97" />
-          <figcaption>PLAYERS · OVERALLS BY CLUB</figcaption>
-        </figure>
-        <figure>
-          <img src="img/spotlight/shot-schedule.jpg" alt="Season schedule with a filter for each club" />
-          <figcaption>SCHEDULE · SCORES AND EACH CLUB</figcaption>
-        </figure>
+    <section class="hero">
+      <p class="kicker">Final showcase</p>
+      <h1>The season, set.</h1>
+      <p class="lede">Twelve games, and it stayed close the whole way. Showtime took the regular season. Rico finished a point back. Sins edged Dukes for third. November 20, the semifinals. We cannot wait to see who gets to the Fret Footy Final.</p>
+    </section>
+
+    <section class="block">
+      <h2>Regular season</h2>
+      <ol class="table">
+        <li>
+          <span class="place">1</span>
+          <img src="img/showtime.png" alt="" />
+          <div>
+            <strong>Team Showtime</strong>
+            <span>6–1–5 · +2</span>
+          </div>
+          <b>19</b>
+        </li>
+        <li>
+          <span class="place">2</span>
+          <img src="img/rico-footy.jpg" alt="" />
+          <div>
+            <strong>Rico Footy</strong>
+            <span>5–3–4 · +1</span>
+          </div>
+          <b>18</b>
+        </li>
+        <li>
+          <span class="place">3</span>
+          <img src="img/sins.jpg" alt="" />
+          <div>
+            <strong>Team Sins</strong>
+            <span>3–5–4 · −1</span>
+          </div>
+          <b>14</b>
+        </li>
+        <li>
+          <span class="place">4</span>
+          <img src="img/dukes-fc.jpg" alt="" />
+          <div>
+            <strong>Dukes FC</strong>
+            <span>3–5–4 · −2</span>
+          </div>
+          <b>14</b>
+        </li>
+      </ol>
+    </section>
+
+    <section class="block">
+      <h2>The race for goals</h2>
+      <div class="leaders">
+        <article>
+          <img src="img/players/sammy.jpg" alt="" />
+          <div>
+            <span class="rank">1</span>
+            <strong>Sammy Rivet</strong>
+            <em>Rico Footy</em>
+            <b>13 goals</b>
+          </div>
+        </article>
+        <article>
+          <img src="img/players/nathan.jpg" alt="" />
+          <div>
+            <span class="rank">2</span>
+            <strong>Nathan Dono</strong>
+            <em>Dukes FC</em>
+            <b>12 goals</b>
+          </div>
+        </article>
+        <article>
+          <img src="img/players/brady.jpg" alt="" />
+          <div>
+            <span class="rank">3</span>
+            <strong>Brady Grislis</strong>
+            <em>Team Showtime</em>
+            <b>9 goals</b>
+          </div>
+        </article>
+        <article>
+          <img src="img/players/colten.jpg" alt="" />
+          <div>
+            <span class="rank">4</span>
+            <strong>Colten Pacheco</strong>
+            <em>Team Showtime</em>
+            <b>8 goals</b>
+          </div>
+        </article>
+        <article>
+          <img src="img/players/mikey.jpg" alt="" />
+          <div>
+            <span class="rank">5</span>
+            <strong>Mikey Tober</strong>
+            <em>Team Sins</em>
+            <b>7 goals</b>
+          </div>
+        </article>
       </div>
     </section>
 
-    <section class="section">
-      <h2>What it does</h2>
-      <div class="mark"></div>
-      <ul class="jobs">
-        <li>Standings, sorted by points and goal difference.</li>
-        <li>Player overalls, with a filter for each club.</li>
-        <li>The full slate. A saved score shows on the match.</li>
-        <li>Each club’s own schedule, record, and results.</li>
-        <li>Weekly power rankings, news, and film.</li>
-        <li>One admin desk updates the public site.</li>
-      </ul>
-    </section>
-
-    <section class="section">
-      <h2>The clubs</h2>
-      <div class="mark"></div>
-      <div class="clubs">
-        <div class="club">
-          <img src="img/spotlight/showtime.png" alt="Team Showtime crest" />
-          <strong>Team Showtime</strong>
-          <span>Brady Grislis, 97, leads the league. James Hayward, 87, is in goal.</span>
-        </div>
-        <div class="club">
-          <img src="img/spotlight/dukes.jpg" alt="Dukes FC crest" />
-          <strong>Dukes FC</strong>
-          <span>Nathan Dono, 95, leads the attack. Zach Zooms is in goal.</span>
-        </div>
-        <div class="club">
-          <img src="img/spotlight/rico.jpg" alt="Rico Footy crest" />
-          <strong>Rico Footy</strong>
-          <span>Sammy Rivet leads the line. Colby Goldstein supplies the assists.</span>
-        </div>
-        <div class="club">
-          <img src="img/spotlight/sins.jpg" alt="Team Sins crest" />
-          <strong>Team Sins</strong>
-          <span>Mark Varano, 88, leads the attack. Brett Daniels is in goal.</span>
-        </div>
+    <section class="block">
+      <h2>November 20</h2>
+      <p class="note">Semifinals. The winners meet in the Fret Footy Final.</p>
+      <div class="semis">
+        <article>
+          <p class="tag">1 vs 4</p>
+          <div class="tie">
+            <div>
+              <img src="img/showtime.png" alt="" />
+              <strong>Showtime</strong>
+            </div>
+            <span>vs</span>
+            <div>
+              <img src="img/dukes-fc.jpg" alt="" />
+              <strong>Dukes</strong>
+            </div>
+          </div>
+        </article>
+        <article>
+          <p class="tag">2 vs 3</p>
+          <div class="tie">
+            <div>
+              <img src="img/rico-footy.jpg" alt="" />
+              <strong>Rico</strong>
+            </div>
+            <span>vs</span>
+            <div>
+              <img src="img/sins.jpg" alt="" />
+              <strong>Sins</strong>
+            </div>
+          </div>
+        </article>
       </div>
+      <p class="cta"><a href="index.html#playoffs">See the bracket</a></p>
     </section>
 
-    <section class="section">
-      <h2>Season lines</h2>
-      <div class="mark"></div>
-      <table>
-        <thead>
-          <tr><th>Player</th><th>Club</th><th>Line</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Brady Grislis</td><td>Team Showtime</td><td>4 goals, 1 assist</td></tr>
-          <tr><td>Nathan Dono</td><td>Dukes FC</td><td>3 goals</td></tr>
-          <tr><td>James Hayward</td><td>Team Showtime</td><td>1 goal against, .985 save percentage</td></tr>
-          <tr><td>Colby Goldstein</td><td>Rico Footy</td><td>3 assists, 17 hits</td></tr>
-          <tr><td>Brody Dorian</td><td>Dukes FC</td><td>1 goal, 1 assist</td></tr>
-          <tr><td>Sammy Rivet</td><td>Rico Footy</td><td>1 goal, 1 assist</td></tr>
-        </tbody>
-      </table>
-    </section>
-
-    <p class="foot">Fret Footy · official league site · 2026 season</p>
+    <p class="foot">Fret Footy · 2026 final showcase</p>
   </main>
 </body>
 </html>
