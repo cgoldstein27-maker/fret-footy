@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fret Footy — class slides</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/slides.css?v=2" />
+</head>
+<body>
+  <div class="deck" id="deck">
+    <section class="slide title">
+      <p class="kicker">2026 season · class presentation</p>
+      <h1>Fret Footy</h1>
+      <p class="lede">The website for a four-club school league. Semifinals are November 20.</p>
+      <p class="url">cgoldstein27-maker.github.io/fret-footy</p>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">What I made, and why</p>
+      <h2>One public home for the season.</h2>
+      <ul class="specs">
+        <li>Standings, player overalls, the full schedule, and power rankings.</li>
+        <li>A playoff bracket and a final showcase, so November 20 has a page.</li>
+        <li>An admin desk, so a new score updates the site without rewriting the page.</li>
+      </ul>
+      <p class="note">The scores were going to live in chats and screenshots. The site is the place the league can actually check.</p>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">The code</p>
+      <h2>HTML, CSS, and JavaScript.</h2>
+      <ul class="specs">
+        <li><b>HTML</b> One page. The nav changes what you see. It does not load a new site.</li>
+        <li><b>CSS</b> Griffin red, black, and the campus behind the pages.</li>
+        <li><b>JavaScript</b> Builds the table from the scores. A win is 3, a draw is 1.</li>
+        <li><b>No framework. No database.</b> The season starts in <b>js/seed.js</b>.</li>
+        <li><b>GitHub Pages</b> A push to main publishes the site.</li>
+      </ul>
+    </section>
+
+    <section class="slide">
+      <p class="kicker" id="countdown">Top teams</p>
+      <h2>Showtime took it. Rico stayed close.</h2>
+      <ol class="table">
+        <li><b>1</b><span>Team Showtime · 6–1–5</span><strong>19</strong></li>
+        <li><b>2</b><span>Rico Footy · 5–3–4</span><strong>18</strong></li>
+        <li><b>3</b><span>Team Sins · 3–5–4</span><strong>14</strong></li>
+        <li><b>4</b><span>Dukes FC · 3–5–4</span><strong>14</strong></li>
+      </ol>
+      <p class="note">Sins finish above Dukes on goal difference, −1 to −2. The site sorts that. Nobody typed “third place.”</p>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">Top scorers</p>
+      <h2>Rivet led it. Dono was right there.</h2>
+      <ol class="table">
+        <li><b>1</b><span>Sammy Rivet · Rico Footy</span><strong>13</strong></li>
+        <li><b>2</b><span>Nathan Dono · Dukes FC</span><strong>12</strong></li>
+        <li><b>3</b><span>Brady Grislis · Showtime</span><strong>9</strong></li>
+        <li><b>4</b><span>Colten Pacheco · Showtime</span><strong>8</strong></li>
+        <li><b>5</b><span>Mikey Tober · Team Sins</span><strong>7</strong></li>
+      </ol>
+      <p class="note">Those totals are added up from the goals marked on each match.</p>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">Live demo · the website</p>
+      <h2>Stay on the league. Four clicks.</h2>
+      <ol class="beats">
+        <li><strong>Home.</strong> Read the table. A volunteer picks a club. Click that row.</li>
+        <li><strong>Players.</strong> Ask who led the league in goals, then open Sammy Rivet.</li>
+        <li><strong>Schedule.</strong> Filter to their club and read one score out loud.</li>
+        <li><strong>Playoffs.</strong> November 20. Showtime–Dukes, Rico–Sins. Take one guess for the final, and leave it open.</li>
+      </ol>
+      <p class="actions">
+        <a class="go" href="https://cgoldstein27-maker.github.io/fret-footy/" target="_blank" rel="noopener">Open the live site</a>
+      </p>
+    </section>
+  </div>
+
+  <div class="chrome">
+    <button type="button" id="prev" aria-label="Previous slide">←</button>
+    <span id="count">1 / 9</span>
+    <button type="button" id="next" aria-label="Next slide">→</button>
+  </div>
+  <p class="hint">Arrow keys</p>
+
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    const count = document.getElementById("count");
+    let i = 0;
+
+    function show(n) {
+      i = Math.max(0, Math.min(slides.length - 1, n));
+      slides.forEach((slide, idx) => slide.classList.toggle("on", idx === i));
+      count.textContent = `${i + 1} / ${slides.length}`;
+    }
+
+    document.getElementById("next").onclick = () => show(i + 1);
+    document.getElementById("prev").onclick = () => show(i - 1);
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") {
+        e.preventDefault();
+        show(i + 1);
+      }
+      if (e.key === "ArrowLeft" || e.key === "PageUp") {
+        e.preventDefault();
+        show(i - 1);
+      }
+      if (e.key === "Home") show(0);
+      if (e.key === "End") show(slides.length - 1);
+    });
+
+    const semis = new Date(2026, 10, 20);
+    const startToday = new Date();
+    startToday.setHours(0, 0, 0, 0);
+    const days = Math.round((semis - startToday) / 86400000);
+    const countdown = document.getElementById("countdown");
+    if (days > 1) countdown.textContent = `${days} days to the semifinals`;
+    else if (days === 1) countdown.textContent = "Semifinals tomorrow";
+    else if (days === 0) countdown.textContent = "Semifinals today";
+    else countdown.textContent = "Semifinals were November 20";
+
+    show(0);
+  </script>
+</body>
+</html>
