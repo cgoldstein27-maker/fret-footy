@@ -42,7 +42,8 @@ h1, h2 {
   line-height: 0.95;
 }
 h1 { font-size: clamp(64px, 10vw, 120px); }
-h2 { font-size: clamp(36px, 5vw, 64px); max-width: 16ch; }
+h2 { font-size: clamp(36px, 5vw, 64px); max-width: 18ch; }
+h2.file { max-width: none; font-size: clamp(32px, 4vw, 52px); }
 .lede, .note {
   font-size: clamp(18px, 2vw, 24px);
   line-height: 1.4;
@@ -136,6 +137,20 @@ h2 { font-size: clamp(36px, 5vw, 64px); max-width: 16ch; }
   font-size: clamp(22px, 3vw, 34px);
   letter-spacing: 0.04em;
 }
+pre.snip {
+  margin: 16px 0 0;
+  padding: 14px 16px;
+  max-width: 920px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: #f4f1f2;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 15px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+pre.snip b { color: #ff8fa3; font-weight: 700; }
 
 .chrome {
   position: fixed;

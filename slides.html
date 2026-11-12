@@ -8,55 +8,87 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/slides.css?v=2" />
+  <link rel="stylesheet" href="css/slides.css?v=3" />
 </head>
 <body>
   <div class="deck" id="deck">
     <section class="slide title">
-      <p class="kicker">2026 season · class presentation</p>
+      <p class="kicker">Class slides</p>
       <h1>Fret Footy</h1>
-      <p class="lede">The website for a four-club school league. Semifinals are November 20.</p>
+      <p class="lede">The website for our school league. Four teams. Semis are November 20.</p>
       <p class="url">cgoldstein27-maker.github.io/fret-footy</p>
     </section>
 
     <section class="slide">
-      <p class="kicker">What I made, and why</p>
-      <h2>One public home for the season.</h2>
-      <ul class="specs">
-        <li>Standings, player overalls, the full schedule, and power rankings.</li>
-        <li>A playoff bracket and a final showcase, so November 20 has a page.</li>
-        <li>An admin desk, so a new score updates the site without rewriting the page.</li>
-      </ul>
-      <p class="note">The scores were going to live in chats and screenshots. The site is the place the league can actually check.</p>
+      <p class="kicker">Why I made it</p>
+      <h2>The scores were in the group chat.</h2>
+      <p class="note">Screenshots too. I wanted one page people could actually open. It has the table, the players, the schedule, and the November 20 bracket.</p>
     </section>
 
     <section class="slide">
-      <p class="kicker">The code</p>
-      <h2>HTML, CSS, and JavaScript.</h2>
-      <ul class="specs">
-        <li><b>HTML</b> One page. The nav changes what you see. It does not load a new site.</li>
-        <li><b>CSS</b> Griffin red, black, and the campus behind the pages.</li>
-        <li><b>JavaScript</b> Builds the table from the scores. A win is 3, a draw is 1.</li>
-        <li><b>No framework. No database.</b> The season starts in <b>js/seed.js</b>.</li>
-        <li><b>GitHub Pages</b> A push to main publishes the site.</li>
-      </ul>
+      <p class="kicker">index.html</p>
+      <h2 class="file">The HTML file is almost empty.</h2>
+      <pre class="snip">&lt;div id="app"&gt;&lt;/div&gt;
+&lt;script type="module" src="js/app.js"&gt;&lt;/script&gt;</pre>
+      <p class="note">app.js writes the page into that div. css/styles.css is only the look: red, black, and the campus photo. It does not figure out any scores.</p>
     </section>
 
     <section class="slide">
-      <p class="kicker" id="countdown">Top teams</p>
-      <h2>Showtime took it. Rico stayed close.</h2>
+      <p class="kicker">js/app.js</p>
+      <h2 class="file">The nav does not open a new page.</h2>
+      <pre class="snip">function go(view) {
+  location.hash = view === "home" ? "" : view;
+  render();
+}</pre>
+      <p class="note">Home, Players, Schedule, Playoffs. Same site. The hash says which one, and render() fills #app.</p>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">js/seed.js</p>
+      <h2 class="file">The season is just data.</h2>
+      <pre class="snip">{ id: "g18", homeId: "rico", awayId: "bnb",
+  home: 1, away: 0, played: true,
+  events: [{ playerId: "p-proulx", goals: 1 }] }</pre>
+      <p class="note">Teams, players, and all 24 games are in this file. That one is Rico 1, Sins 0. Grayson Proulx scored it.</p>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">js/store.js · standings()</p>
+      <h2 class="file">I don't save the table.</h2>
+      <pre class="snip">if (g.home &gt; g.away) home.pts += 3;
+else if (g.home &lt; g.away) away.pts += 3;
+else { home.pts += 1; away.pts += 1; }
+
+rows.sort((a, b) =&gt;
+  b.pts - a.pts || b.gd - a.gd || b.gf - a.gf);</pre>
+      <p class="note">It loops the games. Win is 3, draw is 1. Sort is points, then goal difference, then goals scored.</p>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">js/app.js · tallyMatchStats()</p>
+      <h2 class="file">Goals get added the same way.</h2>
+      <pre class="snip">for (const e of g.events || []) {
+  goals[e.playerId] =
+    (goals[e.playerId] || 0) + (Number(e.goals) || 0);
+}</pre>
+      <p class="note">Each match has a list of who scored. This adds those up. Rivet's 13 is that sum, not a number typed in at the end.</p>
+    </section>
+
+    <section class="slide">
+      <p class="kicker" id="countdown">Final table</p>
+      <h2>Showtime finished first.</h2>
       <ol class="table">
         <li><b>1</b><span>Team Showtime · 6–1–5</span><strong>19</strong></li>
         <li><b>2</b><span>Rico Footy · 5–3–4</span><strong>18</strong></li>
         <li><b>3</b><span>Team Sins · 3–5–4</span><strong>14</strong></li>
         <li><b>4</b><span>Dukes FC · 3–5–4</span><strong>14</strong></li>
       </ol>
-      <p class="note">Sins finish above Dukes on goal difference, −1 to −2. The site sorts that. Nobody typed “third place.”</p>
+      <p class="note">Sins and Dukes are both on 14. Sins is third because goal difference is the tiebreaker, −1 to −2.</p>
     </section>
 
     <section class="slide">
-      <p class="kicker">Top scorers</p>
-      <h2>Rivet led it. Dono was right there.</h2>
+      <p class="kicker">Goals</p>
+      <h2>Sammy Rivet had 13.</h2>
       <ol class="table">
         <li><b>1</b><span>Sammy Rivet · Rico Footy</span><strong>13</strong></li>
         <li><b>2</b><span>Nathan Dono · Dukes FC</span><strong>12</strong></li>
@@ -64,20 +96,20 @@
         <li><b>4</b><span>Colten Pacheco · Showtime</span><strong>8</strong></li>
         <li><b>5</b><span>Mikey Tober · Team Sins</span><strong>7</strong></li>
       </ol>
-      <p class="note">Those totals are added up from the goals marked on each match.</p>
+      <p class="note">Counted by tallyMatchStats(). It adds the goals on each match.</p>
     </section>
 
     <section class="slide">
-      <p class="kicker">Live demo · the website</p>
-      <h2>Stay on the league. Four clicks.</h2>
+      <p class="kicker">Demo</p>
+      <h2>I'll open the site.</h2>
       <ol class="beats">
-        <li><strong>Home.</strong> Read the table. A volunteer picks a club. Click that row.</li>
-        <li><strong>Players.</strong> Ask who led the league in goals, then open Sammy Rivet.</li>
-        <li><strong>Schedule.</strong> Filter to their club and read one score out loud.</li>
-        <li><strong>Playoffs.</strong> November 20. Showtime–Dukes, Rico–Sins. Take one guess for the final, and leave it open.</li>
+        <li><strong>Home.</strong> Someone picks a team. I click that row.</li>
+        <li><strong>Players.</strong> Sammy Rivet. That's the 13.</li>
+        <li><strong>Schedule.</strong> Filter to their team and read one score.</li>
+        <li><strong>Playoffs.</strong> November 20. Showtime–Dukes, Rico–Sins.</li>
       </ol>
       <p class="actions">
-        <a class="go" href="https://cgoldstein27-maker.github.io/fret-footy/" target="_blank" rel="noopener">Open the live site</a>
+        <a class="go" href="https://cgoldstein27-maker.github.io/fret-footy/" target="_blank" rel="noopener">Open the site</a>
       </p>
     </section>
   </div>
