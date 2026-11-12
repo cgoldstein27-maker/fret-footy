@@ -26,52 +26,14 @@
     </section>
 
     <section class="slide">
-      <p class="kicker">index.html</p>
-      <h2 class="file">The HTML file is almost empty.</h2>
-      <pre class="snip">&lt;div id="app"&gt;&lt;/div&gt;
-&lt;script type="module" src="js/app.js"&gt;&lt;/script&gt;</pre>
-      <p class="note">app.js writes the page into that div. css/styles.css is only the look: red, black, and the campus photo. It does not figure out any scores.</p>
-    </section>
-
-    <section class="slide">
-      <p class="kicker">js/app.js</p>
-      <h2 class="file">The nav does not open a new page.</h2>
-      <pre class="snip">function go(view) {
-  location.hash = view === "home" ? "" : view;
-  render();
-}</pre>
-      <p class="note">Home, Players, Schedule, Playoffs. Same site. The hash says which one, and render() fills #app.</p>
-    </section>
-
-    <section class="slide">
-      <p class="kicker">js/seed.js</p>
-      <h2 class="file">The season is just data.</h2>
-      <pre class="snip">{ id: "g18", homeId: "rico", awayId: "bnb",
-  home: 1, away: 0, played: true,
-  events: [{ playerId: "p-proulx", goals: 1 }] }</pre>
-      <p class="note">Teams, players, and all 24 games are in this file. That one is Rico 1, Sins 0. Grayson Proulx scored it.</p>
-    </section>
-
-    <section class="slide">
-      <p class="kicker">js/store.js · standings()</p>
-      <h2 class="file">I don't save the table.</h2>
-      <pre class="snip">if (g.home &gt; g.away) home.pts += 3;
-else if (g.home &lt; g.away) away.pts += 3;
-else { home.pts += 1; away.pts += 1; }
-
-rows.sort((a, b) =&gt;
-  b.pts - a.pts || b.gd - a.gd || b.gf - a.gf);</pre>
-      <p class="note">It loops the games. Win is 3, draw is 1. Sort is points, then goal difference, then goals scored.</p>
-    </section>
-
-    <section class="slide">
-      <p class="kicker">js/app.js · tallyMatchStats()</p>
-      <h2 class="file">Goals get added the same way.</h2>
-      <pre class="snip">for (const e of g.events || []) {
-  goals[e.playerId] =
-    (goals[e.playerId] || 0) + (Number(e.goals) || 0);
-}</pre>
-      <p class="note">Each match has a list of who scored. This adds those up. Rivet's 13 is that sum, not a number typed in at the end.</p>
+      <p class="kicker">The code</p>
+      <h2>HTML, CSS, and JavaScript.</h2>
+      <ul class="specs">
+        <li><b>HTML</b> The page. One file. The buttons change what you see.</li>
+        <li><b>CSS</b> The look. Red, black, and the campus photo.</li>
+        <li><b>JavaScript</b> Builds the table from the scores. A win is 3, a draw is 1. Goals get added up from each match.</li>
+        <li><b>The data</b> Teams, players, and the games are stored in one file.</li>
+      </ul>
     </section>
 
     <section class="slide">
@@ -96,7 +58,7 @@ rows.sort((a, b) =&gt;
         <li><b>4</b><span>Colten Pacheco · Showtime</span><strong>8</strong></li>
         <li><b>5</b><span>Mikey Tober · Team Sins</span><strong>7</strong></li>
       </ol>
-      <p class="note">Counted by tallyMatchStats(). It adds the goals on each match.</p>
+      <p class="note">Added up from the goals on each match.</p>
     </section>
 
     <section class="slide">
