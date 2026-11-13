@@ -8,38 +8,53 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/slides.css?v=3" />
+  <link rel="stylesheet" href="css/slides.css?v=5" />
 </head>
 <body>
   <div class="deck" id="deck">
     <section class="slide title">
-      <p class="kicker">Official site</p>
-      <h1>Fret Footy</h1>
-      <p class="lede">This is the official website of Fret Footy. Dukes, Rico, Sins, and Showtime.</p>
-      <p class="url">cgoldstein27-maker.github.io/fret-footy</p>
+      <div class="hero">
+        <div>
+          <p class="kicker">Official website</p>
+          <h1>Fret Footy</h1>
+          <p class="lede">This is the official Fret Footy website. Four teams.</p>
+          <div class="crests">
+            <figure><img src="img/dukes-fc.jpg" alt="Dukes FC" /><figcaption>Dukes</figcaption></figure>
+            <figure><img src="img/rico-footy.jpg" alt="Rico Footy" /><figcaption>Rico</figcaption></figure>
+            <figure><img src="img/sins.jpg" alt="Team Sins" /><figcaption>Sins</figcaption></figure>
+            <figure><img src="img/showtime.png" alt="Team Showtime" /><figcaption>Showtime</figcaption></figure>
+          </div>
+          <p class="url">cgoldstein27-maker.github.io/fret-footy</p>
+        </div>
+        <img class="mark" src="img/fret-footy-logo.jpg" alt="Fret Footy logo" />
+      </div>
     </section>
 
     <section class="slide">
-      <p class="kicker">What the site does</p>
-      <h2>You can look up the season.</h2>
-      <ul class="specs">
-        <li><b>Home</b> The table, a news card, and a recap now that the season is over.</li>
-        <li><b>Standings</b> The full table. Points first, then goal difference.</li>
-        <li><b>Players</b> Overalls, each roster, and who scored.</li>
-        <li><b>Schedule</b> Every match. Filter to one team and read the score.</li>
-        <li><b>Power rankings</b> A weekly order of the four teams, with a note on each.</li>
-      </ul>
+      <p class="kicker">What it does</p>
+      <h2>Home and the players page.</h2>
+      <div class="pair">
+        <figure>
+          <img class="low" src="img/slides/home.jpg" alt="Home page, Showtime first with 19 points" />
+          <figcaption>Home. The table is on there, plus a writeup of how the season went.</figcaption>
+        </figure>
+        <figure>
+          <img src="img/slides/players.jpg" alt="Players page with overalls and scoring leaders" />
+          <figcaption>Players. Overalls on the left. Goals are in the box on the right.</figcaption>
+        </figure>
+      </div>
+      <p class="note">Standings is the full table, and you can click a team to get the roster. Schedule is all 24 games. Power rankings is the order I put them in that week. Not the same as the points.</p>
     </section>
 
     <section class="slide">
-      <p class="kicker">What the site does</p>
-      <h2>And the rest of it.</h2>
+      <p class="kicker">What it does</p>
+      <h2>The other pages.</h2>
       <ul class="specs">
-        <li><b>Playoffs</b> The November 20 bracket. Showtime against Dukes, Rico against Sins.</li>
-        <li><b>Videos</b> Highlights, once they are added.</li>
-        <li><b>Showcase</b> The season on its own page.</li>
-        <li><b>Admin</b> Enter a score there and the site updates.</li>
-        <li><b>Play</b> A penalty game in the browser. Separate from the league pages.</li>
+        <li><b>Playoffs</b> The Nov 20 bracket. I'll show it in a minute.</li>
+        <li><b>Videos</b> Clips go here. Nothing's up unless someone adds one.</li>
+        <li><b>Showcase</b> A separate page that just covers the season.</li>
+        <li><b>Admin</b> Where I type in a score, so I don't have to edit the page.</li>
+        <li><b>Play</b> A penalty game. It doesn't touch the real table.</li>
       </ul>
     </section>
 
@@ -47,56 +62,53 @@
       <p class="kicker">The code</p>
       <h2>HTML, CSS, and JavaScript.</h2>
       <ul class="specs">
-        <li><b>HTML</b> The page. One file. The buttons change what you see.</li>
-        <li><b>CSS</b> The look. Red, black, and the campus photo.</li>
-        <li><b>JavaScript</b> Builds the table from the scores. A win is 3, a draw is 1. Goals get added up from each match.</li>
-        <li><b>The data</b> Teams, players, and the games are stored in one file.</li>
+        <li><b>HTML</b> The page. One file. The buttons change what's on it.</li>
+        <li><b>CSS</b> How it looks. Red, black, and the campus photo behind it.</li>
+        <li><b>JavaScript</b> The math. A win is 3, a draw is 1, and it totals the goals off each game.</li>
+        <li><b>The data</b> Teams, players, and the scores are saved in one file.</li>
       </ul>
     </section>
 
     <section class="slide">
       <p class="kicker">Team leaderboard</p>
-      <h2>Showtime finished first.</h2>
+      <h2>Showtime had 19. Rico had 18.</h2>
       <ol class="table">
-        <li><b>1</b><span>Team Showtime · 6–1–5</span><strong>19</strong></li>
-        <li><b>2</b><span>Rico Footy · 5–3–4</span><strong>18</strong></li>
-        <li><b>3</b><span>Team Sins · 3–5–4</span><strong>14</strong></li>
-        <li><b>4</b><span>Dukes FC · 3–5–4</span><strong>14</strong></li>
+        <li><b>1</b><span><img src="img/showtime.png" alt="" /> Showtime · 6–1–5</span><strong>19</strong></li>
+        <li><b>2</b><span><img src="img/rico-footy.jpg" alt="" /> Rico · 5–3–4</span><strong>18</strong></li>
+        <li><b>3</b><span><img src="img/sins.jpg" alt="" /> Sins · 3–5–4</span><strong>14</strong></li>
+        <li><b>4</b><span><img src="img/dukes-fc.jpg" alt="" /> Dukes · 3–5–4</span><strong>14</strong></li>
       </ol>
-      <p class="note">Sins and Dukes are both on 14. Sins is third on goal difference, −1 to −2.</p>
+      <p class="note">Sins and Dukes are tied on points. Sins is third because they let in fewer goals, −1 to −2.</p>
     </section>
 
     <section class="slide">
-      <p class="kicker" id="countdown">Semifinals</p>
+      <p class="kicker" id="countdown">Semis</p>
       <h2>November 20.</h2>
-      <ol class="table">
-        <li><b>1</b><span>Showtime vs Dukes</span><strong>#1–#4</strong></li>
-        <li><b>2</b><span>Rico vs Sins</span><strong>#2–#3</strong></li>
-      </ol>
-      <p class="note">No scores yet. The winner of each one meets in the final.</p>
+      <img class="bracket" src="img/slides/playoffs.jpg" alt="Playoff bracket, Showtime vs Dukes and Rico vs Sins" />
+      <p class="note">Showtime plays Dukes. Rico plays Sins. Neither one has a score yet.</p>
     </section>
 
     <section class="slide">
       <p class="kicker">Point leaders</p>
-      <h2>Sammy Rivet had 13.</h2>
-      <ol class="table">
-        <li><b>1</b><span>Sammy Rivet · Rico Footy</span><strong>13</strong></li>
-        <li><b>2</b><span>Nathan Dono · Dukes FC</span><strong>12</strong></li>
-        <li><b>3</b><span>Brady Grislis · Showtime</span><strong>9</strong></li>
-        <li><b>4</b><span>Colten Pacheco · Showtime</span><strong>8</strong></li>
-        <li><b>5</b><span>Mikey Tober · Team Sins</span><strong>7</strong></li>
+      <h2>Sammy had 13 goals.</h2>
+      <ol class="faces">
+        <li><img src="img/players/sammy.jpg" alt="Sammy Rivet" /><b>Sammy Rivet</b><em>13</em><span>Rico</span></li>
+        <li><img src="img/players/nathan.jpg" alt="Nathan Dono" /><b>Nathan Dono</b><em>12</em><span>Dukes</span></li>
+        <li><img src="img/players/brady.jpg" alt="Brady Grislis" /><b>Brady Grislis</b><em>9</em><span>Showtime</span></li>
+        <li><img src="img/players/colten.jpg" alt="Colten Pacheco" /><b>Colten Pacheco</b><em>8</em><span>Showtime</span></li>
+        <li><img src="img/players/mikey.jpg" alt="Mikey Tober" /><b>Mikey Tober</b><em>7</em><span>Sins</span></li>
       </ol>
-      <p class="note">Those numbers are goals, added up from each match.</p>
+      <p class="note">Those are goals. The 19 and 18 from before are team points. Different thing.</p>
     </section>
 
     <section class="slide">
       <p class="kicker">Demo</p>
-      <h2>I'll open the site.</h2>
+      <h2>I'll open the real site.</h2>
       <ol class="beats">
-        <li><strong>Home.</strong> Someone picks a team. I click that row.</li>
-        <li><strong>Players.</strong> Sammy Rivet. That's the 13.</li>
-        <li><strong>Schedule.</strong> Filter to their team and read one score.</li>
-        <li><strong>Playoffs.</strong> November 20. Showtime–Dukes, Rico–Sins.</li>
+        <li><strong>Home.</strong> Someone names a team. I click that row.</li>
+        <li><strong>Players.</strong> Sammy. He's the one with 13.</li>
+        <li><strong>Schedule.</strong> Filter to that team and read a score.</li>
+        <li><strong>Playoffs.</strong> Nov 20. Showtime–Dukes, Rico–Sins.</li>
       </ol>
       <p class="actions">
         <a class="go" href="https://cgoldstein27-maker.github.io/fret-footy/" target="_blank" rel="noopener">Open the site</a>
@@ -142,10 +154,10 @@
     startToday.setHours(0, 0, 0, 0);
     const days = Math.round((semis - startToday) / 86400000);
     const countdown = document.getElementById("countdown");
-    if (days > 1) countdown.textContent = `${days} days to the semifinals`;
-    else if (days === 1) countdown.textContent = "Semifinals tomorrow";
-    else if (days === 0) countdown.textContent = "Semifinals today";
-    else countdown.textContent = "Semifinals were November 20";
+    if (days > 1) countdown.textContent = `${days} days until semis`;
+    else if (days === 1) countdown.textContent = "Semis are tomorrow";
+    else if (days === 0) countdown.textContent = "Semis are today";
+    else countdown.textContent = "Semis were November 20";
 
     show(0);
   </script>
